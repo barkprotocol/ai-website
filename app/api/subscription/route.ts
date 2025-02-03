@@ -1,19 +1,26 @@
-import { NextResponse } from "next/server"
-import { mockDb } from "@/lib/mock-db"
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { NextResponse } from "next/server";
+import { mockDb } from "@/lib/mock-db";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
+interface SubscriptionRequest {
+  action: "subscribe" | "unsubscribe";
+}
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions)
+  try {
+    const session = await getServerSession(authOptions);
 
-  if (!session || !session.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  const { action } = await req.json()
+    const body = (await req.json()) as SubscriptionRequest;
+    if (!body.action || !["subscribe", "unsubscribe"].includes(body.action)) {
+      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+    }
 
-  if (action === "subscribe") {
-    try {
+    if (body.action === "subscribe") {
       const subscription = await mockDb.subscription.create({
         data: {
           userId: session.user.id,
@@ -21,15 +28,12 @@ export async function POST(req: Request) {
           endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
           active: true,
         },
-      })
+      });
 
-      return NextResponse.json({ success: true, subscription })
-    } catch (error) {
-      console.error("Subscription creation error:", error)
-      return NextResponse.json({ error: "Failed to create subscription" }, { status: 500 })
+      return NextResponse.json({ success: true, subscription });
     }
-  } else if (action === "unsubscribe") {
-    try {
+
+    if (body.action === "unsubscribe") {
       const subscription = await mockDb.subscription.updateMany({
         where: {
           userId: session.user.id,
@@ -39,37 +43,40 @@ export async function POST(req: Request) {
           active: false,
           endDate: new Date(),
         },
-      })
+      });
 
-      return NextResponse.json({ success: true, subscription })
-    } catch (error) {
-      console.error("Subscription cancellation error:", error)
-      return NextResponse.json({ error: "Failed to cancel subscription" }, { status: 500 })
+      return NextResponse.json({ success: true, subscription });
     }
+  } catch (error) {
+    console.error("Error processing subscription request:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json({ error: "Invalid action" }, { status: 400 })
 }
 
 export async function GET(req: Request) {
-  const session = await getServerSession(authOptions)
-
-  if (!session || !session.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
   try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const subscription = await mockDb.subscription.findFirst({
       where: {
         userId: session.user.id,
         active: true,
       },
-    })
+    });
 
-    return NextResponse.json({ subscription })
+    return NextResponse.json({ subscription });
   } catch (error) {
-    console.error("Subscription fetch error:", error)
-    return NextResponse.json({ error: "Failed to fetch subscription" }, { status: 500 })
+    console.error("Error fetching subscription:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
-

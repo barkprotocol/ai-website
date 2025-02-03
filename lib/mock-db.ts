@@ -16,12 +16,12 @@ export const mockDb = {
       }),
     },
     subscription: {
-      findFirst: async () => null,
+      findFirst: async (p0: { where: { userId: any; active: boolean; }; }) => null,
       create: async (data: any) => ({
         ...data.data,
         id: "mock-subscription-id",
       }),
-      updateMany: async () => ({ count: 1 }),
+      updateMany: async (p0: { where: { userId: any; active: boolean; }; data: { active: boolean; endDate: Date; }; }) => ({ count: 1 }),
       findMany: async () => [],
     },
   }
