@@ -4,11 +4,11 @@ import { BarChart, LineChart, PieChart } from "@/components/ui/charts"
 export function AnalyticsDashboard() {
   // This data would typically come from an API call
   const tradeData = [
-    { date: "2023-05-01", profit: 120 },
-    { date: "2023-05-02", profit: -45 },
-    { date: "2023-05-03", profit: 67 },
-    { date: "2023-05-04", profit: 210 },
-    { date: "2023-05-05", profit: -15 },
+    { date: "2024-11-01", profit: 120 },
+    { date: "2024-11-02", profit: -45 },
+    { date: "2024-11-03", profit: 67 },
+    { date: "2024-11-04", profit: 210 },
+    { date: "2024-11-05", profit: -15 },
   ]
 
   const portfolioAllocation = [

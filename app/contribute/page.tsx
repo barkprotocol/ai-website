@@ -1,15 +1,8 @@
 import type { Metadata } from "next"
-import { Suspense } from "react"
-import dynamic from "next/dynamic"
 import { sharedMetadata } from "@/components/shared-metadata"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Check } from "lucide-react"
-import { Loading } from "@/components/ui/loading"
-
-const DynamicSolanaPayWrapper = dynamic(() => import("@/components/solana-pay-wrapper"), { ssr: false })
-const DynamicEAPTransactionCheckerWrapper = dynamic(() => import("@/components/eap-transaction-checker-wrapper"), {
-  ssr: false,
-})
+import { DynamicContributeSections } from "@/components/contribute/dynamic-contribute-sections"
 
 export const metadata: Metadata = sharedMetadata({
   title: "Contribute | BARK AI Agent",
@@ -78,19 +71,10 @@ export default function ContributePage() {
               </ul>
             </CardContent>
             <CardFooter>
-              <Suspense fallback={<Loading />}>
-                <DynamicSolanaPayWrapper amount={level.price} label={`BARK AI EAP - ${level.name}`} />
-              </Suspense>
+              <DynamicContributeSections amount={level.price} label={`BARK AI EAP - ${level.name}`} />
             </CardFooter>
           </Card>
         ))}
-      </div>
-
-      <div className="mt-8 p-6 bg-card rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-4">Verify Your Contribution</h2>
-        <Suspense fallback={<Loading />}>
-          <DynamicEAPTransactionCheckerWrapper />
-        </Suspense>
       </div>
 
       <div className="text-center mt-16">
