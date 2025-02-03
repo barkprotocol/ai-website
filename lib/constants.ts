@@ -3,7 +3,7 @@ export const MAX_TOKEN_MESSAGES = 10
 export const NO_CONFIRMATION_MESSAGE = " (No confirmation required)"
 
 // Environment-specific constants
-export const APP_VERSION = process.env.npm_package_version || "1.0.0"
+export const APP_VERSION = process.env.pnpm_package_version || "1.0.1"
 export const IS_BETA = true
 export const NODE_ENV = process.env.NODE_ENV || "development"
 export const IS_PRODUCTION = NODE_ENV === "production"
@@ -19,6 +19,7 @@ export const NEXT_PUBLIC_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:
 export const NEXT_PUBLIC_SOLANA_NETWORK = process.env.NEXT_PUBLIC_SOLANA_NETWORK || "mainnet-beta"
 export const NEXT_PUBLIC_BARK_MINT_ADDRESS = process.env.NEXT_PUBLIC_BARK_MINT_ADDRESS || ""
 export const BARK_PROTOCOL_ADDRESS = process.env.BARK_PROTOCOL_ADDRESS || ""
+export const BARK_MINT = "2NTvEssJ2i998V2cMGT4Fy3JhyFnAzHFonDo9dbAkVrg"
 
 // Language and localization
 export const DEFAULT_LANGUAGE = "en"

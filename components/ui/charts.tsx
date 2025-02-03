@@ -1,60 +1,43 @@
-"use client"
-
+import { Bar, Line, Pie } from "react-chartjs-2"
 import {
-  ResponsiveContainer,
-  LineChart as RechartsLineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Title,
   Tooltip,
   Legend,
-  BarChart as RechartsBarChart,
-  Bar,
-  PieChart as RechartsPieChart,
-  Pie,
-  Cell,
-} from "recharts"
+} from "chart.js"
 
-export const LineChart = ({ data, xKey, yKey }: { data: any[]; xKey: string; yKey: string }) => (
-  <ResponsiveContainer width="100%" height={300}>
-    <RechartsLineChart data={data}>
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey={xKey} />
-      <YAxis />
-      <Tooltip />
-      <Legend />
-      <Line type="monotone" dataKey={yKey} stroke="#8884d8" activeDot={{ r: 8 }} />
-    </RechartsLineChart>
-  </ResponsiveContainer>
-)
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend)
 
-export const BarChart = ({ data }: { data: any[] }) => (
-  <ResponsiveContainer width="100%" height={300}>
-    <RechartsBarChart data={data}>
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="name" />
-      <YAxis />
-      <Tooltip />
-      <Legend />
-      <Bar dataKey="value" fill="#8884d8" />
-    </RechartsBarChart>
-  </ResponsiveContainer>
-)
+interface ChartData {
+  labels: string[]
+  datasets: {
+    label: string
+    data: number[]
+    backgroundColor?: string | string[]
+    borderColor?: string
+    borderWidth?: number
+  }[]
+}
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"]
+interface ChartProps {
+  data: ChartData
+}
 
-export const PieChart = ({ data }: { data: any[] }) => (
-  <ResponsiveContainer width="100%" height={300}>
-    <RechartsPieChart>
-      <Pie data={data} cx="50%" cy="50%" labelLine={false} outerRadius={80} fill="#8884d8" dataKey="value">
-        {data.map((entry, index) => (
-          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-        ))}
-      </Pie>
-      <Tooltip />
-      <Legend />
-    </RechartsPieChart>
-  </ResponsiveContainer>
-)
+export function BarChart({ data }: ChartProps) {
+  return <Bar data={data} />
+}
+
+export function LineChart({ data }: ChartProps) {
+  return <Line data={data} />
+}
+
+export function PieChart({ data }: ChartProps) {
+  return <Pie data={data} />
+}
 

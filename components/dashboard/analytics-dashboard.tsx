@@ -2,26 +2,43 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, LineChart, PieChart } from "@/components/ui/charts"
 
 export function AnalyticsDashboard() {
-  // This data would typically come from an API call
-  const tradeData = [
-    { date: "2024-11-01", profit: 120 },
-    { date: "2024-11-02", profit: -45 },
-    { date: "2024-11-03", profit: 67 },
-    { date: "2024-11-04", profit: 210 },
-    { date: "2024-11-05", profit: -15 },
-  ]
+  const tradeData = {
+    labels: ["2023-05-01", "2023-05-02", "2023-05-03", "2023-05-04", "2023-05-05"],
+    datasets: [
+      {
+        label: "Profit/Loss",
+        data: [120, -45, 67, 210, -15],
+        borderColor: "rgb(75, 192, 192)",
+        tension: 0.1,
+      },
+    ],
+  }
 
-  const portfolioAllocation = [
-    { name: "SOL", value: 40 },
-    { name: "USDC", value: 30 },
-    { name: "BARK", value: 20 },
-    { name: "Other", value: 10 },
-  ]
+  const portfolioAllocation = {
+    labels: ["SOL", "USDC", "BARK", "Other"],
+    datasets: [
+      {
+        data: [40, 30, 20, 10],
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.8)",
+          "rgba(54, 162, 235, 0.8)",
+          "rgba(255, 206, 86, 0.8)",
+          "rgba(75, 192, 192, 0.8)",
+        ],
+      },
+    ],
+  }
 
-  const tradingVolume = [
-    { name: "Buy", value: 65 },
-    { name: "Sell", value: 35 },
-  ]
+  const tradingVolume = {
+    labels: ["Buy", "Sell"],
+    datasets: [
+      {
+        label: "Trading Volume",
+        data: [65, 35],
+        backgroundColor: ["rgba(75, 192, 192, 0.8)", "rgba(255, 99, 132, 0.8)"],
+      },
+    ],
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -30,7 +47,7 @@ export function AnalyticsDashboard() {
           <CardTitle>Profit/Loss Over Time</CardTitle>
         </CardHeader>
         <CardContent>
-          <LineChart data={tradeData} xKey="date" yKey="profit" />
+          <LineChart data={tradeData} />
         </CardContent>
       </Card>
       <Card>

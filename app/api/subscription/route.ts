@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import prisma from "@/lib/prisma"
+import { mockDb } from "@/lib/mock-db"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
 
   if (action === "subscribe") {
     try {
-      const subscription = await prisma.subscription.create({
+      const subscription = await mockDb.subscription.create({
         data: {
           userId: session.user.id,
           startDate: new Date(),
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     }
   } else if (action === "unsubscribe") {
     try {
-      const subscription = await prisma.subscription.updateMany({
+      const subscription = await mockDb.subscription.updateMany({
         where: {
           userId: session.user.id,
           active: true,
@@ -59,7 +59,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    const subscription = await prisma.subscription.findFirst({
+    const subscription = await mockDb.subscription.findFirst({
       where: {
         userId: session.user.id,
         active: true,

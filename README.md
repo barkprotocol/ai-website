@@ -2,6 +2,8 @@
 
 BARK AI Agent is an advanced AI-powered platform designed to optimize your trading experience on the Solana blockchain. It provides smart trading strategies, real-time market analysis, and seamless DeFi interactions.
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fhello-world)
+
 ## Features
 
 - Frontend

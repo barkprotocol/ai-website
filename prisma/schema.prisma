@@ -30,6 +30,11 @@ model User {
   privyId   String     @unique
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+  emailVerified      DateTime?
+  image              String?
+  walletAddress      String?        @unique
+  isSubscribed       Boolean        @default(false)
+  subscriptionEndsAt DateTime?
 
   earlyAccess Boolean  @default(false)
   degenMode  Boolean   @default(false)

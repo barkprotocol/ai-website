@@ -1,58 +1,72 @@
 import NextAuth from "next-auth"
+import type { NextAuthOptions, User } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import prisma from "@/lib/prisma"
-import { verifyMessage } from "@solana/web3.js"
+import { mockDb } from "@/lib/mock-db"
+import { compare } from "bcryptjs"
 
-export const authOptions = {
+const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: "Solana",
+      name: "credentials",
       credentials: {
-        message: { label: "Message", type: "text" },
-        signature: { label: "Signature", type: "text" },
-        publicKey: { label: "Public Key", type: "text" },
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
-        if (!credentials?.publicKey || !credentials?.message || !credentials?.signature) {
-          return null
+      async authorize(credentials): Promise<User | null> {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email and password are required")
         }
 
-        const messageUint8 = new TextEncoder().encode(credentials.message)
-        const publicKeyUint8 = new TextEncoder().encode(credentials.publicKey)
-        const signatureUint8 = new TextEncoder().encode(credentials.signature)
-
-        const isValid = verifyMessage(messageUint8, signatureUint8, publicKeyUint8)
-
-        if (!isValid) {
-          return null
-        }
-
-        let user = await prisma.user.findUnique({
-          where: { walletAddress: credentials.publicKey },
+        const user = await mockDb.user.findUnique({
+          where: {
+            email: credentials.email,
+          },
         })
 
-        if (!user) {
-          user = await prisma.user.create({
-            data: { walletAddress: credentials.publicKey },
-          })
+        if (!user || !user.password) {
+          throw new Error("User not found")
         }
 
-        return user
+        const isValid = await compare(credentials.password, user.password)
+
+        if (!isValid) {
+          throw new Error("Invalid password")
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        }
       },
     }),
   ],
-  callbacks: {
-    async session({ session, token }) {
-      session.user.id = token.sub
-      return session
-    },
-  },
   pages: {
     signIn: "/login",
+  },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id
+      }
+      return token
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        ;(session.user as any).id = token.id
+      }
+      return session
+    },
   },
 }
 
 const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }
+
+export { authOptions }
 
