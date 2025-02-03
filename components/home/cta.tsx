@@ -34,8 +34,8 @@ export default function CTA() {
             size="lg"
             className="font-medium px-8 py-3 text-lg bg-white text-black hover:bg-gray-100 focus:ring-4 focus:ring-white/50 transition-all shadow-lg hover:shadow-xl"
           >
-            <Link href="/app">
-              Launch App
+            <Link href="/signup">
+              SignUp
               <span className="sr-only"> - Start using BARK AI</span>
             </Link>
           </Button>
