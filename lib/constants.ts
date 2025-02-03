@@ -20,6 +20,8 @@ export const NEXT_PUBLIC_SOLANA_NETWORK = process.env.NEXT_PUBLIC_SOLANA_NETWORK
 export const NEXT_PUBLIC_BARK_MINT_ADDRESS = process.env.NEXT_PUBLIC_BARK_MINT_ADDRESS || ""
 export const BARK_PROTOCOL_ADDRESS = process.env.BARK_PROTOCOL_ADDRESS || ""
 export const BARK_MINT = "2NTvEssJ2i998V2cMGT4Fy3JhyFnAzHFonDo9dbAkVrg"
+export const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+export const RECIPIENT = "BARKkeAwhTuFzcLHX4DjotRsmjXQ1MshGrZbn1CUQqMo"
 
 // Language and localization
 export const DEFAULT_LANGUAGE = "en"
