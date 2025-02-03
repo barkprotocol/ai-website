@@ -1,6 +1,7 @@
 "use client"
 
-import { Suspense, type ReactNode } from "react"
+import type React from "react"
+import { Suspense } from "react"
 import dynamic from "next/dynamic"
 
 const DynamicWalletProviders = dynamic(() => import("@/components/wallet-providers"), {
@@ -12,7 +13,7 @@ const DynamicWalletButton = dynamic(() => import("@/components/ui/wallet-button"
   loading: () => <div>Loading wallet...</div>,
 })
 
-export function DynamicProviders({ children }: { children: ReactNode }) {
+export function DynamicProviders({ children }: { children: React.ReactNode }) {
   return (
     <DynamicWalletProviders>
       <Suspense fallback={<div>Loading wallet...</div>}>

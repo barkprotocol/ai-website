@@ -11,7 +11,7 @@ import PageLoading from "@/components/ui/page-loading"
 import "./globals.css"
 import type React from "react"
 import { Suspense } from "react"
-import { DynamicProviders } from "@/components/wallet-providers"
+import { DynamicProviders } from "@/components/dynamic-providers"
 
 const syne = Syne({
   subsets: ["latin"],
@@ -43,9 +43,7 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <DynamicProviders>
               <AuthProviders>
-                <Header>
-                  <DynamicWalletButton />
-                </Header>
+                <Header />
                 <Suspense fallback={<PageLoading />}>
                   <main className="flex-grow">{children}</main>
                 </Suspense>

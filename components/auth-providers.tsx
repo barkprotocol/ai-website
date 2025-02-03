@@ -4,7 +4,7 @@ import { PrivyProvider } from "@privy-io/react-auth"
 import { useTheme } from "next-themes"
 import { useState, useEffect } from "react"
 import { ErrorBoundary } from "react-error-boundary"
-import { RPC_URL, NEXT_PUBLIC_SOLANA_NETWORK } from "@/lib/constants"
+import { NEXT_PUBLIC_SOLANA_NETWORK } from "@/lib/constants"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { retry } from "@/lib/retry"
@@ -77,7 +77,7 @@ const PrivyProviderWithRetry = ({ children, theme }: { children: React.ReactNode
         },
         loginMethods: ["email", "wallet"],
         defaultChain: "solana",
-        supportedChains: [{ name: NEXT_PUBLIC_SOLANA_NETWORK, rpcUrl: RPC_URL }],
+        supportedChains: [{ id: NEXT_PUBLIC_SOLANA_NETWORK, name: NEXT_PUBLIC_SOLANA_NETWORK }],
       }}
     >
       {children}
