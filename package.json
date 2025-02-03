@@ -61,6 +61,7 @@
     "@solana/wallet-adapter-react-ui": "latest",
     "@solana/wallet-adapter-wallets": "latest",
     "@solana/web3.js": "latest",
+    "@supabase/ssr": "^0.5.2",
     "@types/react": "latest",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.9",
