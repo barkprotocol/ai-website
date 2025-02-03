@@ -1,3 +1,5 @@
+"use client";
+
 import { Bot, BarChart3, Link, HeartHandshake, MessageSquare, Vote } from "lucide-react"
 import { formatNumber, formatChartPrice } from "@/lib/format-utils"
 
