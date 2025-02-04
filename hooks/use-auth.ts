@@ -5,14 +5,12 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { usePrivy } from "@privy-io/react-auth"
 import { useWallet } from "@solana/wallet-adapter-react"
+import type { User } from "@/lib/mock-db"
 
-type User = {
+type SessionUser = {
   id: string
   email: string
   name?: string
-  isSubscribed: boolean
-  subscriptionEndsAt?: Date
-  walletAddress?: string | null
 }
 
 export function useAuth() {
@@ -20,11 +18,11 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const router = useRouter()
-  const { login: privyLogin, logout: privyLogout, authenticated, ready } = usePrivy()
+  const { login: privyLogin, logout: privyLogout, authenticated, ready, user: privyUser } = usePrivy()
   const { publicKey, connected } = useWallet()
 
   const fetchUser = useCallback(async () => {
-    if (authenticated && connected) {
+    if (authenticated && connected && privyUser) {
       setIsLoading(true)
       setError(null)
       try {
@@ -50,7 +48,7 @@ export function useAuth() {
       setUser(null)
       setIsLoading(false)
     }
-  }, [authenticated, connected, publicKey])
+  }, [authenticated, connected, publicKey, privyUser])
 
   useEffect(() => {
     if (ready) {
@@ -74,6 +72,12 @@ export function useAuth() {
     }
   }, [privyLogout, router])
 
+  const refreshUserData = useCallback(async () => {
+    if (authenticated && connected) {
+      await fetchUser()
+    }
+  }, [authenticated, connected, fetchUser])
+
   return {
     user,
     isLoading,
@@ -82,6 +86,7 @@ export function useAuth() {
     login,
     logout,
     fetchUser,
+    refreshUserData,
   }
 }
 

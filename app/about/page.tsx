@@ -1,9 +1,17 @@
-import type { Metadata } from "next"
-import Image from "next/image"
+import type { Metadata } from "next/types"
+import { default as Image } from "next/image"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Brain, Shield, LineChart, Zap, Rocket, Code, Gavel } from "lucide-react"
+import dynamic from "next/dynamic"
 import { Icons } from "@/components/ui/icons"
+
+const Brain = dynamic(() => import("lucide-react").then((mod) => mod.Brain))
+const Shield = dynamic(() => import("lucide-react").then((mod) => mod.Shield))
+const LineChart = dynamic(() => import("lucide-react").then((mod) => mod.LineChart))
+const Zap = dynamic(() => import("lucide-react").then((mod) => mod.Zap))
+const Rocket = dynamic(() => import("lucide-react").then((mod) => mod.Rocket))
+const Code = dynamic(() => import("lucide-react").then((mod) => mod.Code))
+const Gavel = dynamic(() => import("lucide-react").then((mod) => mod.Gavel))
 
 export const metadata: Metadata = {
   title: "About BARK AI Agent",

@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata } from "next/types"
 
 const defaultMetadata: Metadata = {
   title: "BARK AI Agent",

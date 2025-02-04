@@ -1,15 +1,21 @@
 "use client"
 
 import { PrivyProvider } from "@privy-io/react-auth"
+import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana"
 import { useTheme } from "next-themes"
 import { useState, useEffect } from "react"
 import { ErrorBoundary } from "react-error-boundary"
-import { NEXT_PUBLIC_SOLANA_NETWORK } from "@/lib/constants"
+import { RPC_URL, NEXT_PUBLIC_SOLANA_NETWORK } from "@/lib/constants"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import type React from "react"
 import { retry } from "@/lib/retry"
 import { FallbackAuth } from "@/components/auth/fallback-auth"
-import type React from "react"
+import type { Cluster } from "@solana/web3.js"
+
+const solanaConnectors = toSolanaWalletConnectors({
+  shouldAutoConnect: false,
+})
 
 function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) {
   return (
@@ -34,10 +40,15 @@ const PrivyProviderWithRetry = ({ children, theme }: { children: React.ReactNode
       try {
         await retry(
           async () => {
-            // Simulate Privy initialization
-            await new Promise<void>((resolve) => {
+            // Attempt to initialize Privy
+            // This is where we would normally call a Privy initialization function
+            // For demonstration, we're simulating the initialization
+            await new Promise<void>((resolve, reject) => {
               setTimeout(() => {
+                // Simulating a successful initialization
                 resolve()
+                // Uncomment the line below to simulate a failure
+                // reject(new Error("Privy initialization failed"));
               }, 1000)
             })
           },
@@ -45,7 +56,7 @@ const PrivyProviderWithRetry = ({ children, theme }: { children: React.ReactNode
           1000,
         )
         setIsLoading(false)
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("Failed to initialize Privy after retries:", error)
         setPrivyError(error instanceof Error ? error : new Error("Failed to initialize Privy"))
       }
@@ -66,18 +77,50 @@ const PrivyProviderWithRetry = ({ children, theme }: { children: React.ReactNode
   return (
     <PrivyProvider
       appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID!}
-      onError={(error) => {
-        console.error("Privy provider error:", error)
-        setPrivyError(error)
-      }}
       config={{
         appearance: {
           theme: theme as "light" | "dark",
           logo: "https://ucarecdn.com/bbc74eca-8e0d-4147-8a66-6589a55ae8d0/bark.webp",
         },
-        loginMethods: ["email", "wallet"],
-        defaultChain: "solana",
-        supportedChains: [{ id: NEXT_PUBLIC_SOLANA_NETWORK, name: NEXT_PUBLIC_SOLANA_NETWORK }],
+        loginMethods: ["wallet"],
+        defaultChain: {
+          id: NEXT_PUBLIC_SOLANA_NETWORK === "mainnet-beta" ? 1399811149 : 16191,
+          name: NEXT_PUBLIC_SOLANA_NETWORK as Cluster,
+          rpcUrls: {
+            default: {
+              http: [RPC_URL],
+            },
+          },
+          nativeCurrency: {
+            decimals: 9,
+            name: "Solana",
+            symbol: "SOL",
+          },
+          blockExplorers: {
+            default: { name: "Solana Explorer", url: "https://explorer.solana.com" },
+          },
+          testnet: NEXT_PUBLIC_SOLANA_NETWORK !== "mainnet-beta",
+        },
+        supportedChains: [
+          {
+            id: NEXT_PUBLIC_SOLANA_NETWORK === "mainnet-beta" ? 1399811149 : 16191,
+            name: NEXT_PUBLIC_SOLANA_NETWORK as Cluster,
+            rpcUrls: {
+              default: {
+                http: [RPC_URL],
+              },
+            },
+            nativeCurrency: {
+              decimals: 9,
+              name: "Solana",
+              symbol: "SOL",
+            },
+            blockExplorers: {
+              default: { name: "Solana Explorer", url: "https://explorer.solana.com" },
+            },
+            testnet: NEXT_PUBLIC_SOLANA_NETWORK !== "mainnet-beta",
+          },
+        ],
       }}
     >
       {children}
@@ -85,7 +128,11 @@ const PrivyProviderWithRetry = ({ children, theme }: { children: React.ReactNode
   )
 }
 
-export default function AuthProviders({ children }: { children: React.ReactNode }) {
+export default function AuthProviders({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
@@ -97,6 +144,7 @@ export default function AuthProviders({ children }: { children: React.ReactNode 
     return null
   }
 
+  // Provide a fallback theme if resolvedTheme is undefined
   const theme = resolvedTheme || "light"
 
   return (

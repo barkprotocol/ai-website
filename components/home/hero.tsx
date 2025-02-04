@@ -37,7 +37,7 @@ export default function Hero() {
     "@type": "WebSite",
     name: "BARK AI Agent",
     description: "Your intelligent copilot for Solana trading and DeFi interactions",
-    url: "https://your-website-url.com",
+    url: "https://ai.barkprotocol.net",
   }
 
   return (

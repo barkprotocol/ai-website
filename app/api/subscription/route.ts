@@ -1,82 +1,83 @@
-import { NextResponse } from "next/server";
-import { mockDb } from "@/lib/mock-db";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-
-interface SubscriptionRequest {
-  action: "subscribe" | "unsubscribe";
-}
+import { NextResponse } from "next/server"
+import { mockDb, type User, type Subscription } from "@/lib/mock-db"
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth-options"
 
 export async function POST(req: Request) {
-  try {
-    const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions)
 
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  // Use optional chaining and nullish coalescing to handle potential undefined values
+  const userId = session?.user?.id ?? "default-user-id"
 
-    const body = (await req.json()) as SubscriptionRequest;
-    if (!body.action || !["subscribe", "unsubscribe"].includes(body.action)) {
-      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
-    }
+  const { action } = await req.json()
 
-    if (body.action === "subscribe") {
+  if (action === "subscribe") {
+    try {
       const subscription = await mockDb.subscription.create({
         data: {
-          userId: session.user.id,
+          userId,
           startDate: new Date(),
           endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
           active: true,
-        },
-      });
+        } as Subscription,
+      })
 
-      return NextResponse.json({ success: true, subscription });
+      await mockDb.user.update({
+        where: { id: userId },
+        data: { isSubscribed: true } as Partial<User>,
+      })
+
+      return NextResponse.json({ success: true, subscription })
+    } catch (error) {
+      console.error("Subscription creation error:", error)
+      return NextResponse.json({ error: "Failed to create subscription" }, { status: 500 })
     }
-
-    if (body.action === "unsubscribe") {
+  } else if (action === "unsubscribe") {
+    try {
       const subscription = await mockDb.subscription.updateMany({
         where: {
-          userId: session.user.id,
+          userId,
           active: true,
         },
         data: {
           active: false,
           endDate: new Date(),
         },
-      });
+      })
 
-      return NextResponse.json({ success: true, subscription });
+      await mockDb.user.update({
+        where: { id: userId },
+        data: { isSubscribed: false } as Partial<User>,
+      })
+
+      return NextResponse.json({ success: true, subscription })
+    } catch (error) {
+      console.error("Subscription cancellation error:", error)
+      return NextResponse.json({ error: "Failed to cancel subscription" }, { status: 500 })
     }
-  } catch (error) {
-    console.error("Error processing subscription request:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
   }
+
+  return NextResponse.json({ error: "Invalid action" }, { status: 400 })
 }
 
 export async function GET(req: Request) {
+  const session = await getServerSession(authOptions)
+
+  // Use optional chaining and nullish coalescing to handle potential undefined values
+  const userId = session?.user?.id ?? "default-user-id"
+
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const subscription = await mockDb.subscription.findFirst({
       where: {
-        userId: session.user.id,
+        userId,
         active: true,
       },
-    });
+    })
 
-    return NextResponse.json({ subscription });
+    return NextResponse.json({ subscription })
   } catch (error) {
-    console.error("Error fetching subscription:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error("Subscription fetch error:", error)
+    return NextResponse.json({ error: "Failed to fetch subscription" }, { status: 500 })
   }
 }
+

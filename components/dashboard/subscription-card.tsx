@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 
@@ -16,18 +16,30 @@ export function SubscriptionCard({ isSubscribed, onSubscribe, onUnsubscribe }: S
   const handleAction = async (action: "subscribe" | "unsubscribe") => {
     setIsLoading(true)
     try {
-      if (action === "subscribe") {
-        await onSubscribe()
-        toast({
-          title: "Subscribed successfully",
-          description: "You are now subscribed to the BARK AI Agent premium plan.",
-        })
+      const response = await fetch("/api/subscription", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ action }),
+      })
+      const data = await response.json()
+      if (data.success) {
+        if (action === "subscribe") {
+          await onSubscribe()
+          toast({
+            title: "Subscribed successfully",
+            description: "You are now subscribed to the BARK AI Agent premium plan.",
+          })
+        } else {
+          await onUnsubscribe()
+          toast({
+            title: "Unsubscribed successfully",
+            description: "You have been unsubscribed from the BARK AI Agent premium plan.",
+          })
+        }
       } else {
-        await onUnsubscribe()
-        toast({
-          title: "Unsubscribed successfully",
-          description: "You have been unsubscribed from the BARK AI Agent premium plan.",
-        })
+        throw new Error(data.error || `Failed to ${action}`)
       }
     } catch (error) {
       toast({

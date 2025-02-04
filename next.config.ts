@@ -1,29 +1,42 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
+import type { Configuration as WebpackConfiguration } from "webpack"
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  swcMinify: true,
   images: {
-    domains: ["ucarecdn.com", "cryptologos.cc"],
+    domains: ["ucarecdn.com", "cryptologos.cc", "raw.githubusercontent.com"],
   },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  webpack: (config, { isServer }) => {
+  webpack: (config: WebpackConfiguration, { isServer }: { isServer: boolean }) => {
     if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-        stream: require.resolve("stream-browserify"),
-        crypto: require.resolve("crypto-browserify"),
-      };
+      config.resolve = {
+        ...config.resolve,
+        fallback: {
+          ...(config.resolve?.fallback || {}),
+          fs: false,
+          net: false,
+          tls: false,
+          crypto: require.resolve("crypto-browserify"),
+        },
+      }
     }
-    return config;
-  },
-};
 
-export default nextConfig;
+    config.module = {
+      ...config.module,
+      rules: [
+        ...(config.module?.rules || []),
+        {
+          test: /\.m?js/,
+          resolve: {
+            fullySpecified: false,
+          },
+        },
+      ],
+    }
+
+    return config
+  },
+}
+
+export default nextConfig
+
