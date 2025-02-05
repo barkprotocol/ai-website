@@ -51,7 +51,7 @@ const MobileMenu = ({
       console.error("Solana wallet connection error:", error)
       toast.error("Failed to connect Solana wallet. Please try again.")
     }
-  }, [])
+  }, [connectWallet]) // Added connectWallet to dependencies
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -69,7 +69,7 @@ const MobileMenu = ({
           ))}
           {isAuthenticated && (
             <Link
-              href="/dashboard"
+              href="/app/(user)/home"
               className="text-lg font-medium transition-colors hover:text-primary"
               onClick={onClose}
             >
@@ -83,7 +83,7 @@ const MobileMenu = ({
             </Button>
           ) : (
             <Button asChild className="w-full justify-start">
-              <Link href="/login">Login</Link>
+              <Link href="/app/(user)/home">Login</Link>
             </Button>
           )}
           <WalletButton />
@@ -153,13 +153,13 @@ export default function Header() {
               ))}
               {isAuthenticated && (
                 <Link
-                  href="/dashboard"
+                  href="/app/(user)/home"
                   className={`text-sm font-medium transition-colors hover:text-primary dark:text-white dark:hover:text-primary px-2 py-1 rounded-md ${
-                    pathname.startsWith("/dashboard")
+                    pathname.startsWith("/app/(user)/home")
                       ? "bg-primary/10 text-primary dark:text-primary"
                       : "text-foreground dark:text-white"
                   }`}
-                  aria-current={pathname.startsWith("/dashboard") ? "page" : undefined}
+                  aria-current={pathname.startsWith("/app/(user)/home") ? "page" : undefined}
                 >
                   Dashboard
                 </Link>
@@ -186,7 +186,7 @@ export default function Header() {
                   asChild
                   className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-200"
                 >
-                  <Link href="/login">Login</Link>
+                  <Link href="/app/(user)/home">Login</Link>
                 </Button>
               )}
             </>

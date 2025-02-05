@@ -152,3 +152,24 @@ export class PrivyEmbeddedWallet extends EventEmitter implements WalletAdapter {
   }
 }
 
+// Constants for subscription and trial features
+export const IS_SUBSCRIPTION_ENABLED = true
+export const IS_TRIAL_ENABLED = true
+
+// Utility function for conditional class names
+export function cn(...classes: (string | boolean | undefined)[]) {
+  return classes.filter(Boolean).join(" ")
+}
+
+// Function to get subscription price as a float
+export function getSubPriceFloat(): number {
+  // Replace this with actual logic to fetch the subscription price
+  return 9.98
+}
+
+// Function to get trial tokens as a float
+export function getTrialTokensFloat(): number {
+  // Replace this with actual logic to fetch the trial tokens amount
+  return 100.0
+}
+

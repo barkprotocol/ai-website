@@ -1,49 +1,149 @@
-import { supabase } from "@/lib/db"
+'use server';
 
-export async function createSavedPrompt(data: { title: string; content: string; userId: string }) {
-  try {
-    const { data: savedPrompt, error } = await supabase.from("saved_prompts").insert(data).single()
+import { SavedPrompt } from '@prisma/client';
+import { z } from 'zod';
 
-    if (error) throw error
+import { ActionResponse, actionClient } from '@/lib/safe-action';
 
-    return { success: true, data: savedPrompt }
-  } catch (error) {
-    console.error("Error creating saved prompt:", error)
-    return { success: false, error: "Failed to create saved prompt" }
+import {
+  dbCreateSavedPrompt,
+  dbDeleteSavedPrompt,
+  dbGetSavedPrompts,
+  dbUpdateSavedPrompt,
+  dbUpdateSavedPromptIsFavorite,
+  dbUpdateSavedPromptLastUsedAt,
+} from '../db/queries';
+import { verifyUser } from './user';
+
+export const createSavedPrompt = actionClient
+  .schema(z.object({ title: z.string(), content: z.string() }))
+  .action<
+    ActionResponse<SavedPrompt>
+  >(async ({ parsedInput: { title, content } }) => {
+    const authResult = await verifyUser();
+    const userId = authResult?.data?.data?.id;
+
+    if (!userId) {
+      return { success: false, error: 'Unauthorized' };
+    }
+
+    const savedPrompt = await dbCreateSavedPrompt({ userId, title, content });
+    if (!savedPrompt) {
+      return {
+        success: false,
+        error: 'Failed to create saved prompt',
+      };
+    }
+
+    return { success: true, data: savedPrompt };
+  });
+
+export const deleteSavedPrompt = actionClient
+  .schema(z.object({ id: z.string() }))
+  .action<ActionResponse<boolean>>(async ({ parsedInput: { id } }) => {
+    const authResult = await verifyUser();
+    const userId = authResult?.data?.data?.id;
+
+    if (!userId) {
+      return { success: false, error: 'Unauthorized' };
+    }
+
+    const isDeleted = await dbDeleteSavedPrompt({ id });
+    if (!isDeleted) {
+      return {
+        success: false,
+        error: 'Failed to delete saved prompt',
+      };
+    }
+
+    return { success: true, data: isDeleted };
+  });
+
+export const editSavedPrompt = actionClient
+  .schema(z.object({ id: z.string(), title: z.string(), content: z.string() }))
+  .action<
+    ActionResponse<SavedPrompt>
+  >(async ({ parsedInput: { id, title, content } }) => {
+    const authResult = await verifyUser();
+    const userId = authResult?.data?.data?.id;
+
+    if (!userId) {
+      return { success: false, error: 'Unauthorized' };
+    }
+
+    const updatedPrompt = await dbUpdateSavedPrompt({ id, title, content });
+    if (!updatedPrompt) {
+      return { success: false, error: 'Failed to update saved prompt' };
+    }
+
+    return { success: true, data: updatedPrompt };
+  });
+
+export const getSavedPrompts = actionClient.action<
+  ActionResponse<SavedPrompt[]>
+>(async () => {
+  const authResult = await verifyUser();
+  const userId = authResult?.data?.data?.id;
+
+  if (!userId) {
+    return { success: false, error: 'Unauthorized' };
   }
-}
 
-export async function getSavedPrompts(userId: string) {
-  try {
-    const { data: savedPrompts, error } = await supabase
-      .from("saved_prompts")
-      .select("*")
-      .eq("userId", userId)
-      .order("lastUsedAt", { ascending: false })
-
-    if (error) throw error
-
-    return { success: true, data: savedPrompts }
-  } catch (error) {
-    console.error("Error fetching saved prompts:", error)
-    return { success: false, error: "Failed to fetch saved prompts" }
+  const savedPrompts = await dbGetSavedPrompts({ userId });
+  if (!savedPrompts) {
+    return {
+      success: false,
+      error: 'Failed to get saved prompts',
+    };
   }
-}
 
-export async function setSavedPromptLastUsedAt(id: string) {
-  try {
-    const { data: updatedPrompt, error } = await supabase
-      .from("saved_prompts")
-      .update({ lastUsedAt: new Date().toISOString() })
-      .eq("id", id)
-      .single()
+  return { success: true, data: savedPrompts };
+});
 
-    if (error) throw error
+export const setIsFavoriteSavedPrompt = actionClient
+  .schema(z.object({ id: z.string(), isFavorite: z.boolean() }))
+  .action<
+    ActionResponse<SavedPrompt>
+  >(async ({ parsedInput: { id, isFavorite } }) => {
+    const authResult = await verifyUser();
+    const userId = authResult?.data?.data?.id;
 
-    return { success: true, data: updatedPrompt }
-  } catch (error) {
-    console.error("Error updating saved prompt last used at:", error)
-    return { success: false, error: "Failed to update saved prompt" }
-  }
-}
+    if (!userId) {
+      return { success: false, error: 'Unauthorized' };
+    }
 
+    const updatedPrompt = await dbUpdateSavedPromptIsFavorite({
+      id,
+      isFavorite,
+    });
+
+    if (!updatedPrompt) {
+      return {
+        success: false,
+        error: 'Failed to update favorite saved prompt',
+      };
+    }
+
+    return { success: true, data: updatedPrompt };
+  });
+
+export const setSavedPromptLastUsedAt = actionClient
+  .schema(z.object({ id: z.string() }))
+  .action<ActionResponse<SavedPrompt>>(async ({ parsedInput: { id } }) => {
+    const authResult = await verifyUser();
+    const userId = authResult?.data?.data?.id;
+
+    if (!userId) {
+      return { success: false, error: 'Unauthorized' };
+    }
+
+    const updatedPrompt = await dbUpdateSavedPromptLastUsedAt({ id });
+    if (!updatedPrompt) {
+      return {
+        success: false,
+        error: 'Failed to update saved prompt lastUsedAt',
+      };
+    }
+
+    return { success: true, data: updatedPrompt };
+  });

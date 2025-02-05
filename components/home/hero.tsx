@@ -92,7 +92,7 @@ export default function Hero() {
                       size="lg"
                       className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-md text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 relative overflow-hidden group font-poppins w-full sm:w-auto"
                     >
-                      <Link href="/dashboard">
+                      <Link href="/(user)/home">
                         <span className="relative z-10">Launch Dashboard</span>
                         <span className="absolute inset-0 bg-gradient-to-r from-primary to-primary-light opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                       </Link>
