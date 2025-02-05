@@ -1,24 +1,18 @@
+import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { createClient } from "@/utils/supabase/middleware"
+import { getToken } from "next-auth/jwt"
 
 export async function middleware(request: NextRequest) {
-  const { supabase, response } = createClient(request)
+  const token = await getToken({ req: request, secret: process.env.JWT_SECRET })
 
-  // Refresh session if expired - required for Server Components
-  await supabase.auth.getSession()
+  if (!token && request.nextUrl.pathname.startsWith("/api/auth/user")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
 
-  return response
+  return NextResponse.next()
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    "/((?!_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/api/auth/user"],
 }
 

@@ -3,7 +3,7 @@ export const MAX_TOKEN_MESSAGES = 10
 export const NO_CONFIRMATION_MESSAGE = " (No confirmation required)"
 
 // Environment-specific constants
-export const APP_VERSION = process.env.pnpm_package_version || "1.0.1"
+export const APP_VERSION = process.env.npm_package_version || "1.0.0"
 export const IS_BETA = true
 export const NODE_ENV = process.env.NODE_ENV || "development"
 export const IS_PRODUCTION = NODE_ENV === "production"
@@ -13,15 +13,12 @@ export const DEBUG_MODE = process.env.NEXT_PUBLIC_DEBUG_MODE === "true"
 export const HELIUS_RPC_URL =
   process.env.NEXT_PUBLIC_HELIUS_RPC_URL || "https://mainnet.helius-rpc.com/?api-key=YOUR_API_KEY"
 export const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || "https://api.mainnet-beta.solana.com"
-export const NEXT_PUBLIC_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000"
+export const NEXT_PUBLIC_URL = process.env.NEXT_PUBLIC_URL || "https://ai.barkprotocol.net"
 
 // Blockchain-specific constants
 export const NEXT_PUBLIC_SOLANA_NETWORK = process.env.NEXT_PUBLIC_SOLANA_NETWORK || "mainnet-beta"
 export const NEXT_PUBLIC_BARK_MINT_ADDRESS = process.env.NEXT_PUBLIC_BARK_MINT_ADDRESS || ""
 export const BARK_PROTOCOL_ADDRESS = process.env.BARK_PROTOCOL_ADDRESS || ""
-export const BARK_MINT = "2NTvEssJ2i998V2cMGT4Fy3JhyFnAzHFonDo9dbAkVrg"
-export const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-export const RECIPIENT = "BARKkeAwhTuFzcLHX4DjotRsmjXQ1MshGrZbn1CUQqMo"
 
 // Language and localization
 export const DEFAULT_LANGUAGE = "en"
@@ -53,6 +50,4 @@ export const EVENTS = {
   ACTION_REFRESH: "action-refresh",
   CONVERSATION_READ: "conversation-read",
 } as const
-
-// Add any other constants you need for your application
 

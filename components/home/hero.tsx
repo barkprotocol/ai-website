@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
@@ -37,7 +37,7 @@ export default function Hero() {
     "@type": "WebSite",
     name: "BARK AI Agent",
     description: "Your intelligent copilot for Solana trading and DeFi interactions",
-    url: "https://ai.barkprotocol.net",
+    url: "https://your-website-url.com",
   }
 
   return (
@@ -75,7 +75,7 @@ export default function Hero() {
                   className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"
                 >
                   <div className="mb-4">
-                    <span className="inline-block bg-black bg-opacity-70 text-gray-100 text-sm font-bold py-1 px-3 rounded-full">
+                    <span className="inline-block bg-black bg-opacity-70 text-white text-sm font-bold py-1 px-3 rounded-full">
                       BARK AI AGENT
                     </span>
                   </div>

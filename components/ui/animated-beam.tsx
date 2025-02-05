@@ -65,7 +65,6 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
         strokeWidth="2"
         initial={{ pathLength: 0, opacity: 0 }}
         animate={controls}
-        style={{ clipPath: "inset(0 100% 0 0)" }}
       />
       <defs>
         <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">

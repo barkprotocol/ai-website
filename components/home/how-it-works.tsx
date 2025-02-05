@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useState, useCallback } from "react"
 import Image from "next/image"
@@ -153,7 +153,7 @@ export default function HowItWorks() {
                       )}
                       priority
                       placeholder="blur"
-                      blurDataURL={sections[activeSection].blurDataUrl}
+                      blurDataURL="/placeholder-blur.svg"
                       onLoad={() => setImageLoading(false)}
                     />
                     {imageLoading && (

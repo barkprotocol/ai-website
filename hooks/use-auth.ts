@@ -4,13 +4,11 @@ import { useCallback, useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { usePrivy } from "@privy-io/react-auth"
-import { useWallet } from "@solana/wallet-adapter-react"
-import type { User } from "@/lib/mock-db"
 
-type SessionUser = {
+type User = {
   id: string
   email: string
-  name?: string
+  // Add other user properties as needed
 }
 
 export function useAuth() {
@@ -18,21 +16,17 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const router = useRouter()
-  const { login: privyLogin, logout: privyLogout, authenticated, ready, user: privyUser } = usePrivy()
-  const { publicKey, connected } = useWallet()
+  const { login: privyLogin, logout: privyLogout, authenticated, ready } = usePrivy()
 
   const fetchUser = useCallback(async () => {
-    if (authenticated && connected && privyUser) {
+    if (authenticated) {
       setIsLoading(true)
       setError(null)
       try {
         const response = await fetch("/api/auth/user")
         const result = await response.json()
         if (result.success && result.data) {
-          setUser({
-            ...result.data,
-            walletAddress: publicKey?.toBase58() || null,
-          })
+          setUser(result.data)
         } else {
           setUser(null)
           setError(new Error(result.error || "Failed to fetch user data"))
@@ -48,7 +42,7 @@ export function useAuth() {
       setUser(null)
       setIsLoading(false)
     }
-  }, [authenticated, connected, publicKey, privyUser])
+  }, [authenticated])
 
   useEffect(() => {
     if (ready) {
@@ -72,21 +66,13 @@ export function useAuth() {
     }
   }, [privyLogout, router])
 
-  const refreshUserData = useCallback(async () => {
-    if (authenticated && connected) {
-      await fetchUser()
-    }
-  }, [authenticated, connected, fetchUser])
-
   return {
     user,
     isLoading,
     error,
-    isAuthenticated: authenticated && connected,
+    isAuthenticated: authenticated,
     login,
     logout,
-    fetchUser,
-    refreshUserData,
   }
 }
 

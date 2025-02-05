@@ -1,22 +1,15 @@
-import type { Metadata } from "next/types"
-import { default as Image } from "next/image"
+import type { Metadata } from "next"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import dynamic from "next/dynamic"
+import { Brain, Shield, LineChart, Zap, Rocket, Code, Gavel } from "lucide-react"
 import { Icons } from "@/components/ui/icons"
-
-const Brain = dynamic(() => import("lucide-react").then((mod) => mod.Brain))
-const Shield = dynamic(() => import("lucide-react").then((mod) => mod.Shield))
-const LineChart = dynamic(() => import("lucide-react").then((mod) => mod.LineChart))
-const Zap = dynamic(() => import("lucide-react").then((mod) => mod.Zap))
-const Rocket = dynamic(() => import("lucide-react").then((mod) => mod.Rocket))
-const Code = dynamic(() => import("lucide-react").then((mod) => mod.Code))
-const Gavel = dynamic(() => import("lucide-react").then((mod) => mod.Gavel))
 
 export const metadata: Metadata = {
   title: "About BARK AI Agent",
   description:
     "Learn more about BARK AI Agent, our MVP status, and our vision for community-driven development on Solana",
+  keywords: ["BARK AI", "Solana", "AI trading", "blockchain", "community-driven development"],
 }
 
 const coreValues = [
@@ -29,7 +22,7 @@ const coreValues = [
 const communityLinks = [
   { name: "Discord", href: "https://discord.gg/barkprotocol", icon: Icons.Discord },
   { name: "Telegram", href: "https://t.me/barkprotocol", icon: Icons.Telegram },
-  { name: "X", href: "https://twitter.com/bark_protocol", icon: Icons.X },
+  { name: "Twitter", href: "https://twitter.com/bark_protocol", icon: Icons.X },
 ]
 
 export default function AboutPage() {
@@ -162,15 +155,20 @@ export default function AboutPage() {
       </section>
 
       <section>
-        <h2 className="text-3xl font-bold mb-6 text-center">Join the BARK Community</h2>
+        <h2 className="text-3xl font-bold mb-6 text-center">Join the BARK AI Community</h2>
         <p className="text-lg mb-6 text-center">
           Be part of our growing community. Share insights, learn, and shape the future of AI-driven Solana trading.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           {communityLinks.map((link, index) => (
-            <Button key={index} asChild className="bg-black text-white hover:bg-gray-800">
-              <Link href={link.href} className="flex items-center">
-                <link.icon className="mr-2 h-5 w-5 text-[#dcd7cc]" />
+            <Button
+              key={index}
+              asChild
+              variant="outline"
+              className="bg-transparent text-foreground border-white hover:bg-white/10"
+            >
+              <Link href={link.href}>
+                <link.icon className="mr-2 h-5 w-5" />
                 Join {link.name}
               </Link>
             </Button>

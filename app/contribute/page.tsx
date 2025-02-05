@@ -1,13 +1,8 @@
-import type { Metadata } from "next"
-import { sharedMetadata } from "@/components/shared-metadata"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Check } from "lucide-react"
-import { DynamicContributeSections } from "@/components/contribute/dynamic-contribute-sections"
-
-export const metadata: Metadata = sharedMetadata({
-  title: "Contribute | BARK AI Agent",
-  description: "Join our Early Access Program and shape the future of AI-driven trading on Solana",
-})
+"use client"
+import { useState } from "react"
+import { SolanaPay } from "@/components/solana-pay"
+import { EAPTransactionChecker } from "@/components/eap-transaction-checker"
+import { ContributionLevelCard } from "@/components/contribution-level-card"
 
 const eapFeatures = [
   "Early access to BARK AI Agent",
@@ -41,6 +36,8 @@ const contributionLevels = [
 ]
 
 export default function ContributePage() {
+  const [selectedLevel, setSelectedLevel] = useState<(typeof contributionLevels)[0] | null>(null)
+
   return (
     <div className="container mx-auto px-4 py-16">
       <h1 className="text-4xl font-bold text-center mb-4">Contribute to BARK AI</h1>
@@ -51,30 +48,27 @@ export default function ContributePage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
         {contributionLevels.map((level) => (
-          <Card
-            key={level.name}
-            className={`flex flex-col ${level.highlighted ? "border-primary shadow-xl" : "shadow-md"}`}
-          >
-            <CardHeader>
-              <CardTitle className="text-2xl">{level.name}</CardTitle>
-              <CardDescription>{level.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-grow">
-              <div className="text-4xl font-bold mb-4">{level.price} SOL</div>
-              <ul className="space-y-2" aria-label={`${level.name} features`}>
-                {level.features.map((feature, index) => (
-                  <li key={index} className="flex items-center">
-                    <Check className="text-[#dcd7cc] mr-2" aria-hidden="true" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-            <CardFooter>
-              <DynamicContributeSections amount={level.price} label={`BARK AI EAP - ${level.name}`} />
-            </CardFooter>
-          </Card>
+          <ContributionLevelCard key={level.name} {...level} onSelect={() => setSelectedLevel(level)} />
         ))}
+      </div>
+
+      {selectedLevel && (
+        <div className="mt-8 p-6 bg-card rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold mb-4">Contribute {selectedLevel.price} SOL</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            You can pay with either SOL or USDC. Select your preferred token below.
+          </p>
+          <SolanaPay
+            amount={selectedLevel.price}
+            label={`BARK AI EAP - ${selectedLevel.name}`}
+            message={`Contribution for ${selectedLevel.name} level`}
+          />
+        </div>
+      )}
+
+      <div className="mt-8 p-6 bg-card rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-4">Verify Your Contribution</h2>
+        <EAPTransactionChecker />
       </div>
 
       <div className="text-center mt-16">

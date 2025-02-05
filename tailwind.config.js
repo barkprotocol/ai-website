@@ -1,5 +1,3 @@
-const { fontFamily } = require("tailwindcss/defaultTheme")
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
@@ -13,6 +11,11 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["var(--font-inter)", "sans-serif"],
+        syne: ["var(--font-syne)", "sans-serif"],
+        poppins: ["var(--font-poppins)", "sans-serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -48,14 +51,14 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      backgroundColor: {
+        light: "hsl(var(--background))",
+        dark: "hsl(var(--background-dark))",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-      },
-      fontFamily: {
-        sans: ["var(--font-poppins)", ...fontFamily.sans],
-        syne: ["var(--font-syne)", ...fontFamily.sans],
       },
       keyframes: {
         "accordion-down": {
@@ -66,10 +69,15 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
+        loading: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        loading: "loading 1s ease-in-out infinite",
       },
     },
   },

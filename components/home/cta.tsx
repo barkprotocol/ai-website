@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import Image from "next/image"
 import Link from "next/link"
@@ -21,21 +21,21 @@ export default function CTA() {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
-          <h2 id="cta-heading" className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 text-white leading-tight">
+        <div className="flex flex-col items-center text-center">
+          <h2 id="cta-heading" className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 text-white">
             Empower Your Solana Trading with BARK AI
           </h2>
-          <p className="text-base sm:text-lg mb-8 text-white/90">
+          <p className="text-lg sm:text-xl mb-8 text-white/90 max-w-2xl">
             Experience the future of Solana trading with the BARK AI Agent. Revolutionize your blockchain interactions
             and boost productivity today.
           </p>
           <Button
             asChild
             size="lg"
-            className="font-medium px-8 py-3 text-lg bg-white text-black hover:bg-gray-100 focus:ring-4 focus:ring-white/50 transition-all shadow-lg hover:shadow-xl"
+            className="font-medium px-8 py-3 text-lg bg-white text-black hover:bg-gray-100 focus:ring-4 focus:ring-white/50 transition-all"
           >
-            <Link href="/signup">
-              SignUp
+            <Link href="/app">
+              Launch App
               <span className="sr-only"> - Start using BARK AI</span>
             </Link>
           </Button>

@@ -21,26 +21,21 @@ export function SolanaPay({ amount, label, message }: SolanaPayProps) {
   const [selectedToken, setSelectedToken] = useState<"SOL" | "USDC">("SOL")
 
   const handlePayment = useCallback(() => {
-    try {
-      const urlParams: TransactionRequestURLFields = {
-        recipient: RECIPIENT,
-        amount,
-        label,
-        message,
-        memo: "BARK AI EAP Contribution",
-      }
-
-      if (selectedToken === "USDC") {
-        urlParams.splToken = USDC_MINT
-      }
-
-      const url = encodeURL(urlParams)
-      const qrCode = createQR(url)
-      setQr(qrCode.toDataURL())
-    } catch (error) {
-      console.error("Failed to generate QR Code:", error)
-      setQr(null)
+    const urlParams: TransactionRequestURLFields = {
+      recipient: RECIPIENT,
+      amount,
+      label,
+      message,
+      memo: "BARK AI EAP Contribution",
     }
+
+    if (selectedToken === "USDC") {
+      urlParams.splToken = USDC_MINT
+    }
+
+    const url = encodeURL(urlParams)
+    const qr = createQR(url)
+    setQr(qr.toDataURL())
   }, [amount, label, message, selectedToken])
 
   return (
@@ -57,13 +52,12 @@ export function SolanaPay({ amount, label, message }: SolanaPayProps) {
         </Select>
         <Button onClick={handlePayment}>Pay with Solana</Button>
       </div>
-      {qr ? (
+      {qr && (
         <div className="mt-4">
-          <Image src={qr} alt="Solana Pay QR Code" width={250} height={250} />
+          <Image src={qr || "/placeholder.svg"} alt="Solana Pay QR Code" width={250} height={250} />
         </div>
-      ) : (
-        <p className="text-gray-500">Click "Pay with Solana" to generate a QR code.</p>
       )}
     </div>
   )
 }
+

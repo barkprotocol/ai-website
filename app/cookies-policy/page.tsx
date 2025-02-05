@@ -1,8 +1,9 @@
 import type { Metadata } from "next"
 import { sharedMetadata } from "@/components/shared-metadata"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { useCallback } from "react"
+import dynamic from "next/dynamic"
+
+const PrintButton = dynamic(() => import("./print-button"), { ssr: false })
 
 export const metadata: Metadata = sharedMetadata({
   title: "Cookies Policy",
@@ -12,10 +13,6 @@ export const metadata: Metadata = sharedMetadata({
 
 export default function CookiesPolicyPage() {
   const currentDate = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
-
-  const handlePrint = useCallback(() => {
-    window.print()
-  }, [])
 
   return (
     <div className="container mx-auto px-4 py-16">
@@ -78,13 +75,7 @@ export default function CookiesPolicyPage() {
         </p>
       </div>
       <div className="mt-8 text-center">
-        <Button
-          onClick={handlePrint}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-4 focus:ring-primary/50 transition-colors"
-          aria-label="Print Cookies Policy"
-        >
-          Print Cookies Policy
-        </Button>
+        <PrintButton />
       </div>
     </div>
   )
