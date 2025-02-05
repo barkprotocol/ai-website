@@ -87,7 +87,7 @@ export const AppSidebarUser = () => {
             <DropdownMenuGroup>
               {/* Follow us on X */}
               <DropdownMenuItem
-                onClick={() => window.open('https://x.com/neur_sh', '_blank')}
+                onClick={() => window.open('https://x.com/bark_protocol', '_blank')}
               >
                 <RiTwitterXFill className="mr-2 h-4 w-4" />
                 Follow us on X

@@ -37,8 +37,8 @@ export const SUGGESTIONS: Suggestion[] = [
   },
   // {
   //   id: 'sell-everything-buy-neur',
-  //   title: 'Sell everything and buy $NEUR',
-  //   subtitle: 'swap all your tokens for $NEUR',
+  //   title: 'Sell everything and buy $BARK',
+  //   subtitle: 'swap all your tokens for $BARK',
   // },
   // {
   //   id: 'phantom-updates',

@@ -41,7 +41,7 @@ export type PrismaUser = _PrismaUser & {
     | null;
 };
 
-export type NeurUser = Pick<
+export type BarkUser = Pick<
   PrismaUser,
   | 'id'
   | 'privyId'

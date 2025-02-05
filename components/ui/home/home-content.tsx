@@ -322,9 +322,9 @@ export function HomeContent() {
   const meetsTokenBalance = useMemo(() => {
     if (!portfolio || !portfolio.tokens) return false;
 
-    // Find the NEUR token
+    // Find the BARK token
     const neurToken = portfolio.tokens.find(
-      (token) => token.mint === process.env.NEXT_PUBLIC_NEUR_MINT,
+      (token) => token.mint === process.env.NEXT_PUBLIC_BARK_MINT,
     );
 
     // Check the balance
@@ -519,7 +519,7 @@ export function HomeContent() {
 
                 <div className="flex items-center justify-between gap-4">
                   <Link
-                    href="https://x.com/neur_sh"
+                    href="https://x.com/bark_protocol"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center text-xs text-muted-foreground transition-colors hover:text-foreground sm:text-sm"
@@ -568,7 +568,7 @@ export function HomeContent() {
                     Subscription Required
                   </h2>
                   <div className="text-muted-foreground">
-                    Subscribe to Neur for <Badge>BETA</Badge> access.
+                    Subscribe to Bark for <Badge>BETA</Badge> access.
                   </div>
                 </div>
 
@@ -585,7 +585,7 @@ export function HomeContent() {
 
                 <div className="flex items-center justify-between gap-4">
                   <Link
-                    href="https://x.com/neur_sh"
+                    href="https://x.com/bark_protocol"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center text-xs text-muted-foreground transition-colors hover:text-foreground sm:text-sm"
@@ -620,11 +620,11 @@ export function HomeContent() {
               <div className="relative space-y-6">
                 <div className="space-y-2 text-center">
                   <h2 className="text-lg font-semibold sm:text-2xl">
-                    Neur Holder Trial
+                    Bark Holder Trial
                   </h2>
                   <div className="text-muted-foreground">
-                    Hold $NEUR tokens in your embedded wallet for{' '}
-                    <Badge>BETA</Badge> access. Deposit NEUR tokens to your
+                    Hold $BARK tokens in your embedded wallet for{' '}
+                    <Badge>BETA</Badge> access. Deposit BARK tokens to your
                     active embedded wallet to continue.
                   </div>
                 </div>
@@ -632,17 +632,17 @@ export function HomeContent() {
                 <div className="rounded-lg bg-white/[0.01] p-4 backdrop-blur-sm dark:bg-black/[0.01]">
                   <div className="mb-2 flex items-center justify-between">
                     <span className="text:xs font-medium sm:text-sm">
-                      Neur Tokens Required
+                      Bark Tokens Required
                     </span>
                     <span className="text-base font-semibold sm:text-lg">
-                      {getTrialTokensFloat()} NEUR
+                      {getTrialTokensFloat()} BARK
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between gap-4">
                   <Link
-                    href="https://x.com/neur_sh"
+                    href="https://x.com/bark_protocol"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center text-xs text-muted-foreground transition-colors hover:text-foreground sm:text-sm"
