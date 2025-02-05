@@ -12,7 +12,6 @@ import { toast } from "sonner"
 import Link from "next/link"
 import Image from "next/image"
 import { useTheme } from "next-themes"
-import type React from "react"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -40,11 +39,11 @@ export default function LoginPage() {
     setIsLoading(true)
     try {
       await connectWallet()
-      toast.success("Solana wallet connected successfully")
+      toast.success("Wallet connected successfully")
       router.push("/dashboard")
     } catch (error) {
-      console.error("Solana wallet connection error:", error)
-      toast.error("Failed to connect Solana wallet. Please try again.")
+      console.error("Wallet connection error:", error)
+      toast.error("Failed to connect wallet. Please try again.")
     } finally {
       setIsLoading(false)
     }
@@ -111,7 +110,7 @@ export default function LoginPage() {
               height={24}
               className="mr-2"
             />
-            {isLoading ? "Connecting..." : "Login with Solana"}
+            {isLoading ? "Connecting..." : "Connect Wallet"}
           </Button>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">

@@ -1,14 +1,15 @@
 import type { Metadata } from "next"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Bot, BarChart2, Zap, Shield, Coins } from "lucide-react"
+import { Bot, BarChart2, Zap, Shield, Coins, Users, Heart, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 export const metadata: Metadata = {
   title: "AI Agents | BARK AI Agent",
-  description: "Explore our advanced AI agents for optimized trading strategies on Solana",
+  description:
+    "Explore our advanced AI agents for optimized trading strategies, crowdfunding, charity, and disaster relief on Solana",
 }
 
 const agents = [
@@ -41,6 +42,24 @@ const agents = [
     description: "DeFi yield optimization across Solana ecosystem",
     icon: Coins,
     features: ["Yield farming", "Liquidity pool analysis", "Auto-compounding"],
+  },
+  {
+    name: "CrowdFundGenius",
+    description: "AI-powered crowdfunding optimization and management",
+    icon: Users,
+    features: ["Campaign strategy optimization", "Donor engagement analysis", "Predictive funding models"],
+  },
+  {
+    name: "CharityChampion",
+    description: "Intelligent charity fund allocation and impact assessment",
+    icon: Heart,
+    features: ["Cause prioritization", "Donation impact tracking", "Transparency reporting"],
+  },
+  {
+    name: "DisasterRelief",
+    description: "Rapid response and resource allocation for disaster situations",
+    icon: AlertTriangle,
+    features: ["Real-time needs assessment", "Resource optimization", "Coordination with relief agencies"],
   },
 ]
 

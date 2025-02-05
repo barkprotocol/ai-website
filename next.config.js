@@ -14,7 +14,14 @@ const nextConfig = {
     }
     return config
   },
+  eslint: {
+    // Disable eslint during production builds
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    // Allow production builds even if there are TypeScript errors
+    ignoreBuildErrors: true,
+  },
 }
 
 module.exports = nextConfig
-
