@@ -90,22 +90,22 @@ export default function Hero() {
                     <Button
                       asChild
                       size="lg"
-                      className="bg-white text-black hover:bg-gray-100 transition-all duration-300 shadow-md text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 relative overflow-hidden group font-poppins w-full sm:w-auto"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-md text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 relative overflow-hidden group font-poppins w-full sm:w-auto"
                     >
                       <Link href="/dashboard">
                         <span className="relative z-10">Launch Dashboard</span>
-                        <span className="absolute inset-0 bg-gradient-to-r from-white to-gray-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                        <span className="absolute inset-0 bg-gradient-to-r from-primary to-primary-light opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                       </Link>
                     </Button>
                     <Button
                       asChild
                       size="lg"
                       variant="outline"
-                      className="bg-transparent text-white border-white hover:bg-white hover:text-black transition-all duration-300 shadow-md text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 relative overflow-hidden group font-poppins w-full sm:w-auto"
+                      className="bg-transparent text-white border-white hover:bg-primary/20 hover:text-primary transition-all duration-300 shadow-md text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 relative overflow-hidden group font-poppins w-full sm:w-auto"
                     >
                       <Link href="https://whitepaper.ai.barkprotocol.net">
                         <span className="relative z-10">Whitepaper</span>
-                        <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                        <span className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
                       </Link>
                     </Button>
                   </div>

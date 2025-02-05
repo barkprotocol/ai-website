@@ -6,7 +6,7 @@ import { WalletModalProvider } from "@solana/wallet-adapter-react-ui"
 import { clusterApiUrl } from "@solana/web3.js"
 import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets"
 import { useMemo } from "react"
-import type React from "react" // Added import for React
+import type React from "react"
 
 // Import styles
 import "@solana/wallet-adapter-react-ui/styles.css"

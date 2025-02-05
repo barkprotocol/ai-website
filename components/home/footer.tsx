@@ -30,29 +30,25 @@ const legalLinks = [
 
 export default function Footer() {
   return (
-    <footer className="bg-background border-t">
-      <div className="container mx-auto px-4 py-12">
-        <a href="#main-content" className="sr-only focus:not-sr-only">
-          Skip to main content
-        </a>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-          <div className="col-span-2 space-y-4">
-            <div className="flex items-center space-x-2">
+    <footer className="bg-gray-100 dark:bg-black border-t border-gray-200 dark:border-gray-800">
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+          <div className="col-span-1 md:col-span-2 space-y-6">
+            <Link href="/" className="flex items-center space-x-2">
               <Image
                 src="https://ucarecdn.com/bbc74eca-8e0d-4147-8a66-6589a55ae8d0/bark.webp"
                 alt="BARK Logo"
-                width={40}
-                height={40}
-                sizes="40px"
+                width={32}
+                height={32}
+                className="w-8 h-8 sm:w-10 sm:h-10"
               />
-              <div>
-                <p className="text-2xl font-bold">BARK</p>
-                <p className="text-xs font-medium">AI AGENT</p>
+              <div className="flex flex-col">
+                <span className="text-lg sm:text-2xl font-bold font-inter dark:text-white">BARK</span>
+                <span className="text-xs font-medium font-inter dark:text-white hidden sm:inline-block">AI AGENT</span>
               </div>
-            </div>
-            <p className="text-sm text-muted-foreground mb-4">
-              Stay connected with BARK AI Agent. Follow us on social media for the latest updates, tips, and community
-              discussions.
+            </Link>
+            <p className="text-sm text-muted-foreground">
+              Stay connected with BARK AI Agent. Follow us for the latest updates and community discussions.
             </p>
             <div className="flex space-x-4">
               {socialLinks.map((link) => {
@@ -73,15 +69,14 @@ export default function Footer() {
             </div>
           </div>
           {footerLinks.map((section) => (
-            <div key={section.title}>
-              <h3 className="font-semibold mb-3">{section.title}</h3>
+            <div key={section.title} className="space-y-4">
+              <h3 className="text-sm font-semibold uppercase tracking-wider">{section.title}</h3>
               <ul className="space-y-2">
                 {section.items.map((item) => (
                   <li key={typeof item === "string" ? item : item.name}>
                     <Link
                       href={typeof item === "string" ? "#" : item.href}
                       className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      aria-label={typeof item === "string" ? item : item.name}
                     >
                       {typeof item === "string" ? item : item.name}
                     </Link>
@@ -91,18 +86,17 @@ export default function Footer() {
             </div>
           ))}
         </div>
-        <div className="mt-12 pt-8 border-t border-border">
+        <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
           <div className="flex flex-col sm:flex-row justify-between items-center">
             <p className="text-sm text-muted-foreground mb-4 sm:mb-0">
               © {new Date().getFullYear()} BARK Protocol. All rights reserved.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex flex-wrap justify-center sm:justify-end space-x-4">
               {legalLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label={`Go to ${link.name}`}
                 >
                   {link.name}
                 </Link>

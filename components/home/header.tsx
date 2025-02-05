@@ -97,7 +97,7 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const pathname = usePathname()
   const isMobile = useMediaQuery("(max-width: 768px)")
-  const { isAuthenticated, logout } = useAuth()
+  const { isAuthenticated, logout, error } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleScroll = useCallback(() => {
@@ -109,13 +109,18 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [handleScroll])
 
+  if (error) {
+    console.error("Authentication error:", error)
+    toast.error("Authentication error. Please try again.")
+  }
+
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         isScrolled ? "bg-background/80 backdrop-blur-sm shadow-sm" : "bg-transparent"
       }`}
     >
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="container mx-auto px-4 py-2 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
           <Image
             src="https://ucarecdn.com/bbc74eca-8e0d-4147-8a66-6589a55ae8d0/bark.webp"
@@ -150,11 +155,11 @@ export default function Header() {
                 <Link
                   href="/dashboard"
                   className={`text-sm font-medium transition-colors hover:text-primary dark:text-white dark:hover:text-primary px-2 py-1 rounded-md ${
-                    pathname === "/dashboard"
+                    pathname.startsWith("/dashboard")
                       ? "bg-primary/10 text-primary dark:text-primary"
                       : "text-foreground dark:text-white"
                   }`}
-                  aria-current={pathname === "/dashboard" ? "page" : undefined}
+                  aria-current={pathname.startsWith("/dashboard") ? "page" : undefined}
                 >
                   Dashboard
                 </Link>
@@ -165,14 +170,22 @@ export default function Header() {
         <div className="flex items-center space-x-2 sm:space-x-4">
           {!isMobile && (
             <>
-              <WalletButton />
+              <WalletButton className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-200" />
               {isAuthenticated ? (
-                <Button onClick={logout} variant="outline" size="sm">
+                <Button
+                  onClick={logout}
+                  variant="outline"
+                  size="sm"
+                  className="border-primary text-primary hover:bg-primary/10"
+                >
                   <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
                   Logout
                 </Button>
               ) : (
-                <Button asChild className="bg-black hover:bg-gray-800 text-white">
+                <Button
+                  asChild
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-200"
+                >
                   <Link href="/login">Login</Link>
                 </Button>
               )}
@@ -182,7 +195,12 @@ export default function Header() {
           {isMobile && (
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="md:hidden" aria-label="Open menu">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="md:hidden border-primary text-primary hover:bg-primary/10"
+                  aria-label="Open menu"
+                >
                   <Menu className="h-5 w-5" aria-hidden="true" />
                 </Button>
               </SheetTrigger>

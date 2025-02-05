@@ -12,13 +12,17 @@ export const DEBUG_MODE = process.env.NEXT_PUBLIC_DEBUG_MODE === "true"
 // API and RPC URLs
 export const HELIUS_RPC_URL =
   process.env.NEXT_PUBLIC_HELIUS_RPC_URL || "https://mainnet.helius-rpc.com/?api-key=YOUR_API_KEY"
-export const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || "https://api.mainnet-beta.solana.com"
-export const NEXT_PUBLIC_URL = process.env.NEXT_PUBLIC_URL || "https://ai.barkprotocol.net"
+export const RPC_URL = process.env.NEXT_PUBLIC_HELIUS_RPC_URL || "https://mainnet.helius-rpc.com/?api-key=YOUR_API_KEY"
+export const NEXT_PUBLIC_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000"
 
 // Blockchain-specific constants
-export const NEXT_PUBLIC_SOLANA_NETWORK = process.env.NEXT_PUBLIC_SOLANA_NETWORK || "mainnet-beta"
+import type { Cluster } from "@solana/web3.js"
+
+export const NEXT_PUBLIC_SOLANA_NETWORK: Cluster = (process.env.NEXT_PUBLIC_SOLANA_NETWORK as Cluster) || "mainnet-beta"
 export const NEXT_PUBLIC_BARK_MINT_ADDRESS = process.env.NEXT_PUBLIC_BARK_MINT_ADDRESS || ""
 export const BARK_PROTOCOL_ADDRESS = process.env.BARK_PROTOCOL_ADDRESS || ""
+export const BARK_TOKEN_ADDRESS = "2NTvEssJ2i998V2cMGT4Fy3JhyFnAzHFonDo9dbAkVrg"
+export const MAX_API_RETRIES = 3
 
 // Language and localization
 export const DEFAULT_LANGUAGE = "en"
@@ -33,6 +37,8 @@ export interface AppConfig {
   rpcUrl: string
   defaultLanguage: SupportedLanguage
   debugMode: boolean
+  barkTokenAddress: string
+  maxApiRetries: number
 }
 
 // Create a config object that can be easily imported and used throughout the app
@@ -43,6 +49,8 @@ export const appConfig: AppConfig = {
   rpcUrl: RPC_URL,
   defaultLanguage: DEFAULT_LANGUAGE,
   debugMode: DEBUG_MODE,
+  barkTokenAddress: BARK_TOKEN_ADDRESS,
+  maxApiRetries: MAX_API_RETRIES,
 }
 
 export const EVENTS = {

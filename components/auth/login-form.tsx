@@ -16,21 +16,31 @@ export function LoginForm() {
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await login({ email })
-      toast.success("Login link sent to your email")
+      await login()
+      toast("Login link sent to your email")
     } catch (error) {
       console.error("Login error:", error)
-      toast.error("Failed to send login link. Please try again.")
+      toast("Failed to send login link. Please try again.", {
+        style: {
+          background: "red",
+          color: "white",
+        },
+      })
     }
   }
 
   const handleSolanaLogin = async () => {
     try {
-      await connectWallet("solana")
-      toast.success("Solana wallet connected successfully")
+      await connectWallet()
+      toast("Solana wallet connected successfully")
     } catch (error) {
       console.error("Solana wallet connection error:", error)
-      toast.error("Failed to connect Solana wallet. Please try again.")
+      toast("Failed to connect Solana wallet. Please try again.", {
+        style: {
+          background: "red",
+          color: "white",
+        },
+      })
     }
   }
 

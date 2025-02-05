@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import Link from "next/link"
 import Image from "next/image"
-import type React from "react" // Added import for React
+import type React from "react"
 
 export function SignupForm() {
   const { login, authenticated, connectWallet } = usePrivy()

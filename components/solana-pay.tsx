@@ -54,7 +54,12 @@ export function SolanaPay({ amount, label, message }: SolanaPayProps) {
       </div>
       {qr && (
         <div className="mt-4">
-          <Image src={qr || "/placeholder.svg"} alt="Solana Pay QR Code" width={250} height={250} />
+          <Image
+            src={qr || "/qr-code-placeholder.svg"}
+            alt={qr ? "Solana Pay QR Code" : "QR Code Placeholder"}
+            width={250}
+            height={250}
+          />
         </div>
       )}
     </div>
