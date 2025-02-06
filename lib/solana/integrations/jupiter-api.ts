@@ -1,42 +1,54 @@
 import { type Connection, Transaction } from "@solana/web3.js"
-import type { TokenInfo } from "@solana/spl-token-registry"
 import { JUPITER_API_BASE } from "@/lib/constants"
 
-interface JupiterRoute {
-  inAmount: string
-  outAmount: string
-  priceImpactPct: number
-  marketInfos: any[]
+export interface JupiterQuoteResponse {
+  inputMint: string
+  outputMint: string
   amount: string
+  swapMode: string
   slippageBps: number
   otherAmountThreshold: string
-  swapMode: string
+  swapEstimate: {
+    inputAmount: string
+    outputAmount: string
+    priceImpactPct: number
+  }
+  routePlan: Array<{
+    swapInfo: {
+      ammKey: string
+      label: string
+      inputMint: string
+      outputMint: string
+      inAmount: string
+      outAmount: string
+      feeAmount: string
+      feeMint: string
+    }
+  }>
 }
 
-async function getJupiterRoute(
-  connection: Connection,
+export async function getJupiterQuote(
   inputMint: string,
   outputMint: string,
   amount: number,
   slippageBps = 50,
-): Promise<JupiterRoute> {
+): Promise<JupiterQuoteResponse> {
   const url = `${JUPITER_API_BASE}/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageBps=${slippageBps}`
 
   const response = await fetch(url)
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`)
   }
-  const data = await response.json()
-  return data as JupiterRoute
+  return await response.json()
 }
 
-async function executeJupiterSwap(
+export async function executeJupiterSwap(
   connection: Connection,
-  wallet: any, // Replace 'any' with the actual wallet type you're using
-  route: JupiterRoute,
+  wallet: any,
+  quoteResponse: JupiterQuoteResponse,
 ): Promise<string> {
   const swapRequestBody = {
-    quoteResponse: route,
+    quoteResponse,
     userPublicKey: wallet.publicKey.toString(),
     wrapUnwrapSOL: true,
   }
@@ -64,14 +76,4 @@ async function executeJupiterSwap(
 
   return txid
 }
-
-async function getTokenList(): Promise<TokenInfo[]> {
-  const response = await fetch("https://token.jup.ag/strict")
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`)
-  }
-  return response.json()
-}
-
-export { getJupiterRoute, executeJupiterSwap, getTokenList }
 

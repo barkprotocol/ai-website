@@ -1,170 +1,300 @@
-import type {
-  PrivyClient,
-  SolanaSignTransactionRpcInputType,
-  SolanaSignMessageRpcInputType,
-} from "@privy-io/server-auth"
-import type { Transaction, TransactionSignature, VersionedTransaction } from "@solana/web3.js"
-import type {
-  SendTransactionOptions,
-  SupportedTransactionVersions,
-  TransactionOrVersionedTransaction,
-  WalletAdapter,
-  WalletName,
-  WalletAdapterEvents,
-} from "@solana/wallet-adapter-base"
-import { WalletReadyState, WalletError } from "@solana/wallet-adapter-base"
-import EventEmitter from "events"
+import { resolve } from "@bonfida/spl-name-service"
+import {
+  Connection,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+  TransactionInstruction,
+} from "@solana/web3.js"
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base"
+import { SOLANA_RPC_URL, SOLANA_COMMITMENT } from "./constants"
 
-// type ArgumentMap<T> = {
-//   [K in keyof T]: T[K] extends (...args: infer A) => any ? A : never
-// }
+// Define PhantomProvider interface
+interface PhantomProvider {
+  publicKey: PublicKey | null
+  isConnected: boolean
+  signTransaction(transaction: Transaction): Promise<Transaction>
+  signAllTransactions(transactions: Transaction[]): Promise<Transaction[]>
+  signMessage(message: Uint8Array): Promise<{ signature: Uint8Array }>
+  connect(): Promise<{ publicKey: PublicKey }>
+  disconnect(): Promise<void>
+}
 
-export class PrivyEmbeddedWallet extends EventEmitter implements WalletAdapter {
-  private privyClient: PrivyClient
-  publicKey: PublicKey
-  private connectionState: "disconnected" | "connecting" | "connected" = "disconnected"
+export const MEMO_PROGRAM_ID = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr")
+export const TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
 
-  constructor(privyClient: PrivyClient, publicKey: PublicKey) {
-    super()
+export const createConnection = () => new Connection(SOLANA_RPC_URL, SOLANA_COMMITMENT)
+
+export interface TransferWithMemoParams {
+  /** Target address */
+  to: string
+  /** Transfer amount (in SOL) */
+  amount: number
+  /** Attached message */
+  memo: string
+}
+
+export class SolanaUtils {
+  private static connection = createConnection()
+
+  /**
+   * Resolve .sol domain name to address
+   * @param domain Domain name
+   */
+  static async resolveDomainToAddress(domain: string): Promise<string | null> {
     try {
-      this.privyClient = privyClient
-      this.publicKey = publicKey
+      const owner = await resolve(this.connection, domain)
+      return owner.toBase58()
     } catch (error) {
-      throw new Error(`Failed to initialize wallet: ${error instanceof Error ? error.message : "Unknown error"}`)
+      console.error("Error resolving domain:", error)
+      return null
     }
   }
 
-  name: WalletName<string> = "Privy Embedded Wallet" as WalletName<string>
-  url = "https://privy.io"
-  icon = "https://privy.io/favicon.ico" // Replace with actual Privy icon URL
-  readyState: WalletReadyState = WalletReadyState.Installed
-
-  get connecting(): boolean {
-    return this.connectionState === "connecting"
-  }
-
-  get connected(): boolean {
-    return this.connectionState === "connected"
-  }
-
-  supportedTransactionVersions?: SupportedTransactionVersions = new Set(["legacy", 0])
-
-  async autoConnect(): Promise<void> {
-    if (this.connected || this.connecting) return
+  /**
+   * Get wallet SOL balance
+   * @param address Wallet address or .sol domain
+   */
+  static async getBalance(address: string): Promise<number> {
     try {
-      await this.connect()
+      let publicKeyStr = address
+
+      // If it's a .sol domain, resolve to address first
+      if (address.toLowerCase().endsWith(".sol")) {
+        const resolvedAddress = await this.resolveDomainToAddress(address)
+        if (!resolvedAddress) {
+          throw new Error("Failed to resolve domain name")
+        }
+        publicKeyStr = resolvedAddress
+      }
+
+      const balance = await this.connection.getBalance(new PublicKey(publicKeyStr))
+      return balance / LAMPORTS_PER_SOL
     } catch (error) {
-      console.error("Auto-connect failed:", error)
+      console.error("Failed to fetch balance:", error)
+      return 0
     }
   }
 
-  async connect(): Promise<void> {
-    if (this.connected || this.connecting) return
-    try {
-      this.connectionState = "connecting"
-      // Removed 'connecting' event emission as it's not part of WalletAdapterEvents
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      this.connectionState = "connected"
-      this.emit("connect", this.publicKey)
-    } catch (error) {
-      this.connectionState = "disconnected"
-      this.emit("error", new WalletError("Failed to connect"))
-      throw error
+  static async getPhantomProvider(): Promise<PhantomProvider | null> {
+    if ("phantom" in window) {
+      const provider = window.phantom?.solana
+      if (provider?.isPhantom) {
+        return provider as unknown as PhantomProvider
+      }
     }
+
+    // Fallback to window.solana
+    if (window.solana?.isPhantom) {
+      return window.solana as unknown as PhantomProvider
+    }
+
+    return null
   }
 
-  async disconnect(): Promise<void> {
-    if (this.connectionState === "disconnected") return
-    try {
-      this.connectionState = "disconnected"
-      this.emit("disconnect")
-    } catch (error) {
-      this.emit("error", new WalletError("Failed to disconnect"))
-      throw error
+  /**
+   * Send SOL transfer transaction with memo
+   */
+  static async sendTransferWithMemo(params: TransferWithMemoParams): Promise<string | null> {
+    const provider = await this.getPhantomProvider()
+    if (!provider) {
+      throw new Error("Phantom wallet not found or connection rejected")
     }
-  }
 
-  async sendTransaction(
-    transaction: TransactionOrVersionedTransaction<this["supportedTransactionVersions"]>,
-    connection: Connection,
-    options?: SendTransactionOptions,
-  ): Promise<TransactionSignature> {
-    if (!this.connected) {
+    if (!provider.publicKey) {
       throw new Error("Wallet not connected")
     }
+
+    const { to, amount, memo } = params
+    const fromPubkey = provider.publicKey
+    const toPubkey = new PublicKey(to)
+
+    // Check balance first
+    const balance = await this.connection.getBalance(fromPubkey)
+    const requiredAmount = amount * LAMPORTS_PER_SOL
+    if (balance < requiredAmount) {
+      throw new Error(`Insufficient balance. You have ${balance / LAMPORTS_PER_SOL} SOL but need ${amount} SOL`)
+    }
+
     try {
-      const signed = await this.signTransaction(transaction)
-      return await connection.sendRawTransaction(signed.serialize(), options)
-    } catch (error) {
-      this.emit("error", new WalletError("Failed to send transaction"))
+      // Create transaction
+      const transaction = new Transaction()
+      transaction.feePayer = fromPubkey
+
+      // Create transfer instruction
+      const transferInstruction = SystemProgram.transfer({
+        fromPubkey,
+        toPubkey,
+        lamports: requiredAmount,
+      })
+
+      // Create Memo instruction
+      const memoInstruction = new TransactionInstruction({
+        keys: [{ pubkey: fromPubkey, isSigner: true, isWritable: true }],
+        programId: MEMO_PROGRAM_ID,
+        data: Buffer.from(memo, "utf-8"),
+      })
+
+      transaction.add(transferInstruction)
+      transaction.add(memoInstruction)
+
+      // Get latest blockhash
+      const { blockhash, lastValidBlockHeight } = await this.connection.getLatestBlockhash()
+      transaction.recentBlockhash = blockhash
+
+      // Sign transaction
+      const signedTransaction = await provider.signTransaction(transaction)
+
+      // Send transaction
+      const signature = await this.connection.sendRawTransaction(signedTransaction.serialize(), {
+        skipPreflight: false,
+        preflightCommitment: SOLANA_COMMITMENT,
+      })
+
+      // Wait for confirmation
+      const confirmation = await this.connection.confirmTransaction(
+        {
+          signature,
+          blockhash,
+          lastValidBlockHeight,
+        },
+        SOLANA_COMMITMENT,
+      )
+
+      if (confirmation.value.err) {
+        throw new Error(`Transaction failed: ${confirmation.value.err.toString()}`)
+      }
+
+      return signature
+    } catch (error: unknown) {
+      console.error("Transaction error:", error)
+      if (error instanceof Error) {
+        // Handle insufficient funds error
+        if (error.message.includes("insufficient lamports")) {
+          throw new Error(`Insufficient balance. Please make sure you have enough SOL to cover the transaction.`)
+        }
+        // Handle other known errors
+        if (error.message.includes("Transaction simulation failed")) {
+          throw new Error(`Transaction failed. Please try again.`)
+        }
+      }
       throw error
     }
   }
 
-  async signTransaction<T extends Transaction | VersionedTransaction>(transaction: T): Promise<T> {
+  /**
+   * Get token balance for a specific mint
+   * @param walletAddress Wallet address
+   * @param mintAddress Token mint address
+   */
+  static async getTokenBalance(walletAddress: string, mintAddress: string): Promise<number> {
     try {
-      const request: SolanaSignTransactionRpcInputType<T> = {
-        address: this.publicKey.toBase58(),
-        chainType: "solana",
-        method: "signTransaction",
-        params: {
-          transaction,
-        },
+      const walletPublicKey = new PublicKey(walletAddress)
+      const mintPublicKey = new PublicKey(mintAddress)
+
+      const tokenAccounts = await this.connection.getTokenAccountsByOwner(walletPublicKey, { mint: mintPublicKey })
+
+      if (tokenAccounts.value.length === 0) {
+        return 0
       }
-      const { data } = await this.privyClient.walletApi.rpc(request)
-      return data.signedTransaction as T
+
+      const balance = await this.connection.getTokenAccountBalance(tokenAccounts.value[0].pubkey)
+      return Number.parseFloat(balance.value.uiAmount?.toString() || "0")
     } catch (error) {
-      throw new Error(`Failed to sign transaction: ${error instanceof Error ? error.message : "Unknown error"}`)
+      console.error("Failed to fetch token balance:", error)
+      return 0
     }
   }
 
-  async signAllTransactions<T extends Transaction | VersionedTransaction>(transactions: T[]): Promise<T[]> {
+  /**
+   * Get all token balances for a wallet
+   * @param walletAddress Wallet address
+   */
+  static async getAllTokenBalances(walletAddress: string): Promise<{ [mintAddress: string]: number }> {
     try {
-      return Promise.all(transactions.map((tx) => this.signTransaction(tx)))
-    } catch (error) {
-      throw new Error(`Failed to sign transactions: ${error instanceof Error ? error.message : "Unknown error"}`)
-    }
-  }
+      const walletPublicKey = new PublicKey(walletAddress)
+      const tokenAccounts = await this.connection.getParsedTokenAccountsByOwner(walletPublicKey, {
+        programId: TOKEN_PROGRAM_ID,
+      })
 
-  async signMessage(message: Uint8Array): Promise<Uint8Array> {
-    try {
-      const request: SolanaSignMessageRpcInputType = {
-        address: this.publicKey.toBase58(),
-        chainType: "solana",
-        method: "signMessage",
-        params: {
-          message: message.toString(),
-        },
+      const balances: { [mintAddress: string]: number } = {}
+
+      for (const { account } of tokenAccounts.value) {
+        const mintAddress = account.data.parsed.info.mint
+        const balance = Number.parseFloat(account.data.parsed.info.tokenAmount.uiAmount.toString())
+        balances[mintAddress] = balance
       }
-      const { data } = await this.privyClient.walletApi.rpc(request)
-      return new Uint8Array(Buffer.from(data.signature, "hex"))
+
+      return balances
     } catch (error) {
-      throw new Error(`Failed to sign message: ${error instanceof Error ? error.message : "Unknown error"}`)
+      console.error("Failed to fetch all token balances:", error)
+      return {}
     }
   }
 
-  listeners<E extends keyof WalletAdapterEvents>(event: E): WalletAdapterEvents[E][] {
-    return super.listeners(event) as WalletAdapterEvents[E][]
+  /**
+   * Get recent transactions for a wallet
+   * @param walletAddress Wallet address
+   * @param limit Number of transactions to fetch (default: 10)
+   */
+  static async getRecentTransactions(walletAddress: string, limit = 10): Promise<any[]> {
+    try {
+      const walletPublicKey = new PublicKey(walletAddress)
+      const signatures = await this.connection.getSignaturesForAddress(walletPublicKey, { limit })
+
+      const transactions = await Promise.all(
+        signatures.map(async (sig) => {
+          const tx = await this.connection.getTransaction(sig.signature, { maxSupportedTransactionVersion: 0 })
+          return {
+            signature: sig.signature,
+            timestamp: sig.blockTime,
+            ...tx,
+          }
+        }),
+      )
+
+      return transactions
+    } catch (error) {
+      console.error("Failed to fetch recent transactions:", error)
+      return []
+    }
   }
 
-  on<E extends keyof WalletAdapterEvents>(event: E, listener: WalletAdapterEvents[E]): this {
-    return super.on(event, listener as (...args: unknown[]) => void)
+  /**
+   * Estimate transaction fee
+   * @param transaction Transaction to estimate fee for
+   */
+  static async estimateTransactionFee(transaction: Transaction): Promise<number> {
+    try {
+      const { feeCalculator } = await this.connection.getRecentBlockhash()
+      return feeCalculator.lamportsPerSignature
+    } catch (error) {
+      console.error("Failed to estimate transaction fee:", error)
+      return 0
+    }
   }
 
-  once<E extends keyof WalletAdapterEvents>(event: E, listener: WalletAdapterEvents[E]): this {
-    return super.once(event, listener as (...args: unknown[]) => void)
-  }
-
-  off<E extends keyof WalletAdapterEvents>(event: E, listener: WalletAdapterEvents[E]): this {
-    return super.off(event, listener as (...args: unknown[]) => void)
-  }
-
-  removeListener<E extends keyof WalletAdapterEvents>(event: E, listener: WalletAdapterEvents[E]): this {
-    return super.removeListener(event, listener as (...args: unknown[]) => void)
-  }
-
-  emit<E extends keyof WalletAdapterEvents>(event: E, ...args: Parameters<WalletAdapterEvents[E]>): boolean {
-    return super.emit(event, ...args)
+  /**
+   * Get the current network (mainnet-beta, testnet, or devnet)
+   */
+  static async getNetwork(): Promise<WalletAdapterNetwork> {
+    try {
+      const genesisHash = await this.connection.getGenesisHash()
+      switch (genesisHash) {
+        case "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d":
+          return WalletAdapterNetwork.Mainnet
+        case "4uhcVJyU9pJkvQyS88uRDiswHXSCkY3zQawwpjk2NsNY":
+          return WalletAdapterNetwork.Testnet
+        case "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG":
+          return WalletAdapterNetwork.Devnet
+        default:
+          throw new Error("Unknown network")
+      }
+    } catch (error) {
+      console.error("Failed to get network:", error)
+      return WalletAdapterNetwork.Mainnet // Default to mainnet
+    }
   }
 }
 
@@ -187,32 +317,5 @@ export function getSubPriceFloat(): number {
 export function getTrialTokensFloat(): number {
   // Replace this with actual logic to fetch the trial tokens amount
   return 100.0
-}
-
-import { Connection, PublicKey } from "@solana/web3.js"
-import { SOLANA_RPC_URL } from "./constants"
-
-export class SolanaUtils {
-  private static connection: Connection
-
-  static getConnection(): Connection {
-    if (!this.connection) {
-      this.connection = new Connection(SOLANA_RPC_URL)
-    }
-    return this.connection
-  }
-
-  static async resolveDomainToAddress(domain: string): Promise<string | null> {
-    try {
-      const connection = this.getConnection()
-      const { pubkey } = await connection.getAddressLookupTable(new PublicKey(domain))
-      return pubkey.toBase58()
-    } catch (error) {
-      console.error("Error resolving domain:", error)
-      return null
-    }
-  }
-
-  // Add more Solana utility functions here as needed
 }
 

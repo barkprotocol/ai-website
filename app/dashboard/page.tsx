@@ -2,39 +2,32 @@
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/hooks/use-auth"
+import { usePrivy } from "@privy-io/react-auth"
 import { Button } from "@/components/ui/button"
+import { DashboardLayout } from "@/components/dashboard/layout"
+import DashboardContent from "@/components/dashboard/content"
 
 export default function DashboardPage() {
-  const { user, logout } = useAuth()
+  const { ready, authenticated, user, logout } = usePrivy()
   const router = useRouter()
 
   useEffect(() => {
-    if (!user) {
+    if (ready && !authenticated) {
       router.push("/login")
     }
-  }, [user, router])
+  }, [ready, authenticated, router])
 
-  if (!user) {
+  if (!ready || !authenticated) {
     return null
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="mx-auto max-w-4xl space-y-8">
-        <h1 className="text-3xl font-bold">Welcome to your Dashboard</h1>
-        <div className="rounded-lg bg-white p-6 shadow-md">
-          <h2 className="mb-4 text-xl font-semibold">Account Information</h2>
-          <p>Email: {user.email}</p>
-          <p>User ID: {user.id}</p>
-        </div>
-        <div className="rounded-lg bg-white p-6 shadow-md">
-          <h2 className="mb-4 text-xl font-semibold">AI Trading Assistant</h2>
-          <p>Your AI trading assistant features will be displayed here.</p>
-        </div>
-        <Button onClick={() => logout()}>Logout</Button>
-      </div>
-    </div>
+    <DashboardLayout>
+      <DashboardContent user={user} />
+      <Button onClick={() => logout()} className="mt-4">
+        Logout
+      </Button>
+    </DashboardLayout>
   )
 }
 

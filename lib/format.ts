@@ -1,4 +1,4 @@
-export function formatNumber(value: number, options: Intl.NumberFormatOptions = {}): string {
+export function formatNumber(value: number, p0: string, p1: number, options: Intl.NumberFormatOptions = {}): string {
   return new Intl.NumberFormat("en-US", options).format(value)
 }
 

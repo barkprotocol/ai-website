@@ -82,7 +82,7 @@ export function AccountContent() {
   const { reauthorize } = useOAuthTokens({
     onOAuthTokenGrant: (tokens: OAuthTokens, { user }: { user: User }) => {
       // Grant Discord role
-      handleGrantDiscordRole(tokens.accessToken)
+      return handleGrantDiscordRole(tokens.accessToken)
     },
   })
 

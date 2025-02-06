@@ -5,12 +5,25 @@ import {
   type DialectSdkInfo,
   ThreadMemberScope,
   type EncryptionKeysProvider,
-  NodeDialectWalletAdapter,
 } from "@dialectlabs/sdk"
+import type { WalletAdapter } from "@solana/wallet-adapter-base"
+
+// Custom adapter for Dialect SDK
+class CustomDialectWalletAdapter {
+  constructor(private wallet: WalletAdapter) {}
+
+  get publicKey(): PublicKey {
+    return this.wallet.publicKey!
+  }
+
+  async signMessage(message: Uint8Array): Promise<Uint8Array> {
+    return this.wallet.signMessage(message)
+  }
+}
 
 async function createDialectClient(
   connection: Connection,
-  wallet: any, // Replace 'any' with the actual wallet type you're using
+  wallet: WalletAdapter,
   environment: "development" | "production" = "development",
 ): Promise<Dialect> {
   const config: DialectSdkInfo = {
@@ -18,11 +31,11 @@ async function createDialectClient(
   }
 
   const encryptionKeysProvider: EncryptionKeysProvider = {
-    publicKey: wallet.publicKey,
-    signMessage: wallet.signMessage,
+    publicKey: wallet.publicKey!,
+    signMessage: wallet.signMessage.bind(wallet),
   }
 
-  const dialectWalletAdapter = new NodeDialectWalletAdapter(wallet)
+  const dialectWalletAdapter = new CustomDialectWalletAdapter(wallet)
 
   return await DialectSdk.initialize({
     wallet: dialectWalletAdapter,

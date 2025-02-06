@@ -2,7 +2,6 @@ import type { Token } from "@/types/token"
 import { useMemo } from "react"
 import { useTheme } from "next-themes"
 import { shortenAddress } from "@/utils/shorten-address"
-import { useAccount } from "wagmi"
 
 interface TokenGridProps {
   tokens: Token[]
@@ -10,7 +9,8 @@ interface TokenGridProps {
 
 const TokenGrid: React.FC<TokenGridProps> = ({ tokens }) => {
   const { theme } = useTheme()
-  const { address } = useAccount()
+  // Replace useAccount with a placeholder
+  const address = "0x..." // Replace this with the actual user's address when available
 
   const formattedTokens = useMemo(() => {
     return tokens.map((token) => ({
