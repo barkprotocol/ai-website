@@ -8,7 +8,7 @@ import {
 } from "@metaplex-foundation/umi"
 import { createNft, mplTokenMetadata, TokenStandard, fetchDigitalAsset } from "@metaplex-foundation/mpl-token-metadata"
 import { createBundlrUploader } from "@metaplex-foundation/umi-uploader-bundlr"
-import { createSignerFromWallet } from "@metaplex-foundation/umi-signer-wallet-adapters"
+import createSignerFromWallet  from "@metaplex-foundation/umi-signer-wallet-adapters"
 import { percentAmount } from "@metaplex-foundation/umi"
 import type { Wallet } from "@coral-xyz/anchor"
 

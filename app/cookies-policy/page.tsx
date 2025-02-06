@@ -1,81 +1,63 @@
 import type { Metadata } from "next"
-import { sharedMetadata } from "@/components/shared-metadata"
 import Link from "next/link"
-import dynamic from "next/dynamic"
 
-const PrintButton = dynamic(() => import("./print-button"), { ssr: false })
+import { sharedMetadata } from "@/components/shared-metadata"
+import { DynamicPrintButton } from "./client-components"
 
 export const metadata: Metadata = sharedMetadata({
   title: "Cookies Policy",
-  description: "Cookies Policy for the BARK AI Agent platform",
-  keywords: ["cookies", "tracking", "user preferences"],
+  description: "Learn about how we use cookies on our website.",
 })
 
-export default function CookiesPolicyPage() {
-  const currentDate = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
-
+export default function CookiesPolicy() {
   return (
-    <div className="container mx-auto px-4 py-16">
-      <nav className="mb-8">
-        <Link href="/" className="text-primary hover:underline" aria-label="Go back to home page">
-          ← Back to Home
-        </Link>
-      </nav>
-      <h1 className="text-4xl font-bold mb-8">Cookies Policy</h1>
-      <div className="prose dark:prose-invert max-w-none">
-        <p>Last updated: {currentDate}</p>
-        <h2>1. What are Cookies?</h2>
+    <div className="container mx-auto max-w-3xl py-8">
+      <h1 className="mb-6 text-3xl font-bold">Cookies Policy</h1>
+      <div className="prose dark:prose-invert">
         <p>
-          Cookies are small text files that are placed on your device when you visit a website. They are widely used to
-          make websites work more efficiently and provide information to the owners of the site.
+          This Cookies Policy explains how Bark AI Agent ("we", "us", and "our") uses cookies and similar technologies
+          to recognize you when you visit our website at{" "}
+          <Link href="https://bark.ai" className="text-primary hover:underline">
+            https://bark.ai
+          </Link>{" "}
+          ("Website"). It explains what these technologies are and why we use them, as well as your rights to control
+          our use of them.
         </p>
-        <h2>2. How We Use Cookies</h2>
-        <p>We use cookies for the following purposes:</p>
-        <ul>
-          <li>To enable certain functions of the Service</li>
-          <li>To provide analytics</li>
-          <li>To store your preferences</li>
-          <li>To enable advertisements delivery, including behavioral advertising</li>
-        </ul>
-        <h2>3. Types of Cookies We Use</h2>
+
+        <h2>What are cookies?</h2>
         <p>
-          We use both session and persistent cookies on the Service and we use different types of cookies to run the
-          Service:
+          Cookies are small data files that are placed on your computer or mobile device when you visit a website.
+          Cookies are widely used by website owners in order to make their websites work, or to work more efficiently,
+          as well as to provide reporting information.
         </p>
-        <ul>
-          <li>Essential cookies: Necessary for the operation of the website</li>
-          <li>
-            Analytical/performance cookies: Allow us to recognize and count the number of visitors and see how visitors
-            move around our website
-          </li>
-          <li>Functionality cookies: Used to recognize you when you return to our website</li>
-          <li>
-            Targeting cookies: Record your visit to our website, the pages you have visited and the links you have
-            followed
-          </li>
-        </ul>
-        <h2>4. Your Choices Regarding Cookies</h2>
+
+        <h2>Why do we use cookies?</h2>
         <p>
-          If you'd like to delete cookies or instruct your web browser to delete or refuse cookies, please visit the
-          help pages of your web browser. Please note, however, that if you delete cookies or refuse to accept them, you
-          might not be able to use all of the features we offer.
+          We use first-party and third-party cookies for several reasons. Some cookies are required for technical
+          reasons in order for our Website to operate, and we refer to these as "essential" or "strictly necessary"
+          cookies. Other cookies also enable us to track and target the interests of our users to enhance the experience
+          on our Website. Third parties serve cookies through our Website for advertising, analytics and other purposes.
         </p>
-        <h2>5. Changes to This Cookies Policy</h2>
+
+        <h2>How can I control cookies?</h2>
         <p>
-          We may update our Cookies Policy from time to time. We will notify you of any changes by posting the new
-          Cookies Policy on this page.
+          You have the right to decide whether to accept or reject cookies. You can exercise your cookie rights by
+          setting your preferences in the Cookie Consent Manager. The Cookie Consent Manager allows you to select which
+          categories of cookies you accept or reject. Essential cookies cannot be rejected as they are strictly
+          necessary to provide you with services.
         </p>
-        <h2>6. Contact Us</h2>
+
+        <h2>Where can I get further information?</h2>
         <p>
-          If you have any questions about our Cookies Policy, please contact us at{" "}
-          <a href="mailto:privacy@barkprotocol.net" className="text-primary hover:underline">
-            privacy@barkprotocol.net
+          If you have any questions about our use of cookies or other technologies, please email us at{" "}
+          <a href="mailto:privacy@bark.ai" className="text-primary hover:underline">
+            privacy@bark.ai
           </a>
           .
         </p>
       </div>
-      <div className="mt-8 text-center">
-        <PrintButton />
+      <div className="mt-8">
+        <DynamicPrintButton />
       </div>
     </div>
   )

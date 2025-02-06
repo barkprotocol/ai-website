@@ -1,10 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
-
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-
 import type { SavedPrompt } from "@prisma/client"
 import { RiTwitterXFill } from "@remixicon/react"
 import type { Attachment, JSONValue } from "ai"
@@ -245,7 +243,7 @@ export function HomeContent() {
     }
   }, [pathname, resetChat])
 
-  // 监听浏览器的前进后退
+  // Listen for browser back/forward navigation
   useEffect(() => {
     const handlePopState = () => {
       if (location.pathname === "/home") {

@@ -15,9 +15,9 @@ import { ChatSkeleton } from "./chat-skeleton"
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: { id: string }
 }): Promise<Metadata> {
-  const { id } = await params
+  const { id } = params
   const conversation = await dbGetConversation({ conversationId: id })
 
   if (!conversation) {
@@ -37,8 +37,8 @@ export async function generateMetadata({
  * Component responsible for fetching and validating chat data
  * Handles authentication, data loading, and access control
  */
-async function ChatData({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+async function ChatData({ params }: { params: { id: string } }) {
+  const { id } = params
   const conversation = await dbGetConversation({ conversationId: id })
 
   if (!conversation) {
@@ -72,7 +72,7 @@ async function ChatData({ params }: { params: Promise<{ id: string }> }) {
 export default function ChatPage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: { id: string }
 }) {
   return (
     <Suspense fallback={<ChatSkeleton />}>

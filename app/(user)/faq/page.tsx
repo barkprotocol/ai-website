@@ -1,99 +1,55 @@
 "use client"
 
-import { EAPTransactionChecker } from "@/components/eap-transaction-checker"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import type { Metadata } from "next"
-import type React from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
-interface FaqItem {
-  id: string
-  question: string
-  answer: string | React.ReactNode
-}
-
-const faqItems: FaqItem[] = [
+const faqs = [
   {
-    id: "item-1",
-    question: "I paid for Early Access Program, but still not showing up?",
-    answer: (
-      <div className="space-y-4">
-        <span>
-          It usually takes 5~30 seconds for the EAP to be granted to your account.
-          <br />
-          If the EAP is not granted, please paste your transaction hash into the transaction checker below.
-        </span>
-        <EAPTransactionChecker />
-      </div>
-    ),
+    question: "What is BARK AI Agent?",
+    answer:
+      "BARK AI Agent is an advanced AI-powered assistant designed specifically for the Solana blockchain ecosystem. It helps users interact with various Solana protocols, manage their assets, and stay informed about the latest developments in the Solana network.",
   },
   {
-    id: "item-2",
-    question: "Can I export my embedded wallet?",
-    answer: (
-      <div className="space-y-4">
-        <span>
-          Unfortunately, to ensure a maximum level of security, we currently do not support exporting your embedded
-          wallet.
-          <br />
-          We will be integrating with famous Embedded Wallet providers soon so you can have absolute control over your
-          wallet.
-        </span>
-      </div>
-    ),
+    question: "How does the Early Access Program work?",
+    answer:
+      "The Early Access Program allows a limited number of users to try BARK AI Agent before its public release. Participants get exclusive access to features, can provide feedback, and help shape the future of the product.",
   },
   {
-    id: "item-3",
-    question: "How can I become EAP Verified in Discord?",
-    answer: (
-      <div className="space-y-4">
-        <span>
-          On the bottom left, tap your wallet, then tap `Account`. Next, you should see a `Connect` button next to
-          Discord. Tap on that and connect to the Discord server.
-          <br />
-          Once that is completed, you should now be `EAP VERIFIED` and see custom Discord channels for EAP users. Your
-          name will also be color differentiated from other users.
-        </span>
-      </div>
-    ),
+    question: "What features are available in the Early Access Program?",
+    answer:
+      "Early Access participants can use BARK AI Agent for portfolio management, real-time market data analysis, automated trading strategies, and seamless interaction with Solana DeFi protocols.",
+  },
+  {
+    question: "How can I join the Early Access Program?",
+    answer:
+      "To join the Early Access Program, you need to sign up on our website and complete the application process. We'll review your application and notify you if you're selected to participate.",
+  },
+  {
+    question: "Is my data safe with BARK AI Agent?",
+    answer:
+      "Yes, we take data security very seriously. BARK AI Agent uses state-of-the-art encryption and security measures to protect your data and transactions. We never store or have access to your private keys.",
   },
 ]
 
-export const metadata: Metadata = {
-  title: "FAQ | BARK AI Agent",
-  description: "Frequently asked questions about BARK AI Agent and Early Access Program",
-}
-
-export default function FaqPage() {
+export default function FAQPage() {
   return (
-    <div className="container mx-auto px-4 py-16">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Frequently Asked Questions</h1>
-
-        <Accordion type="single" collapsible className="space-y-4">
-          {faqItems.map((item) => (
-            <AccordionItem key={item.id} value={item.id} className="bg-card rounded-lg border border-border/40 px-4">
-              <AccordionTrigger className="text-lg py-4 hover:no-underline">{item.question}</AccordionTrigger>
-              <AccordionContent className="pb-4 text-muted-foreground">{item.answer}</AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-
-        <div className="mt-12 text-center text-sm text-muted-foreground">
-          <p>
-            Can't find what you're looking for?{" "}
-            <a
-              href="https://discord.gg/barkprotocol"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              Join our Discord
-            </a>{" "}
-            for more support.
-          </p>
-        </div>
-      </div>
+    <div className="container mx-auto px-4 py-8">
+      <Card>
+        <CardHeader>
+          <CardTitle>Frequently Asked Questions</CardTitle>
+          <CardDescription>Find answers to common questions about BARK AI Agent and our Early Access Program</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Accordion type="single" collapsible className="w-full">
+            {faqs.map((faq, index) => (
+              <AccordionItem key={index} value={`item-${index}`}>
+                <AccordionTrigger>{faq.question}</AccordionTrigger>
+                <AccordionContent>{faq.answer}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </CardContent>
+      </Card>
     </div>
   )
 }
-
