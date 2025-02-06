@@ -7,8 +7,8 @@ import { dbGetUserTelegramChat, dbUpdateUserTelegramChat } from "@/server/db/que
 
 import { verifyUser } from "./user"
 
-export const MISSING_USERNAME_ERROR = "No saved Telegram username found"
-export const BOT_NOT_STARTED_ERROR = "Bot not started yet"
+const MISSING_USERNAME_ERROR = "No saved Telegram username found"
+const BOT_NOT_STARTED_ERROR = "Bot not started yet"
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!
 const TELEGRAM_BOT_USERNAME = process.env.TELEGRAM_BOT_USERNAME
@@ -61,7 +61,7 @@ const sendTelegramMessage = async (chatId: string, text: string) => {
  * Verifies that the current user is logged in, retrieves (or uses) a Telegram username,
  * confirms the user has started the bot, and updates the DB if needed.
  */
-export async function checkUserTelegramSetup(username?: string, userId?: string): Promise<CheckUserSetupResult> {
+async function checkUserTelegramSetup(username?: string, userId?: string): Promise<CheckUserSetupResult> {
   const authUserId =
     userId ||
     (await (async () => {
@@ -169,4 +169,12 @@ export const sendTelegramNotification = actionClient
       }
     }
   })
+
+export async function getMissingUsernameError(): Promise<string> {
+  return MISSING_USERNAME_ERROR
+}
+
+export async function getBotNotStartedError(): Promise<string> {
+  return BOT_NOT_STARTED_ERROR
+}
 

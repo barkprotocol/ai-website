@@ -106,7 +106,7 @@
     "node-fetch": "^3.3.2",
     "nodemailer": "^6.10.0",
     "permissionless": "latest",
-    "react": "^18.3.1",
+    "react": "^19.0.0",
     "react-day-picker": "9.5.1",
     "react-dom": "^19.0.0",
     "react-error-boundary": "^5.0.0",
