@@ -1,24 +1,24 @@
-import { ImageIcon, SendHorizontal } from 'lucide-react';
+import { ImageIcon, SendHorizontal } from "lucide-react"
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 /**
  * Generate a random integer between min and max (inclusive)
  */
 function getRandomInt(min: number, max: number) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
 /**
  * Renders a pair of user and AI messages with random dimensions for loading state
  */
 function MessagePair({ isFirst = false }: { isFirst?: boolean }) {
-  const userMsgHeight = getRandomInt(20, 40);
-  const aiMsgHeight = getRandomInt(60, 200);
-  const userMsgWidth = getRandomInt(160, 300);
-  const aiMsgWidth = getRandomInt(200, 400);
+  const userMsgHeight = getRandomInt(20, 40)
+  const aiMsgHeight = getRandomInt(60, 200)
+  const userMsgWidth = getRandomInt(160, 300)
+  const aiMsgWidth = getRandomInt(200, 400)
 
   return (
     <>
@@ -38,9 +38,7 @@ function MessagePair({ isFirst = false }: { isFirst?: boolean }) {
       </div>
 
       {/* AI Response */}
-      <div
-        className={`flex w-full items-start gap-3 ${!isFirst ? 'mt-6' : ''}`}
-      >
+      <div className={`flex w-full items-start gap-3 ${!isFirst ? "mt-6" : ""}`}>
         <Avatar className="mt-0.5 h-8 w-8 shrink-0 select-none">
           <AvatarFallback></AvatarFallback>
         </Avatar>
@@ -57,7 +55,7 @@ function MessagePair({ isFirst = false }: { isFirst?: boolean }) {
         </div>
       </div>
     </>
-  );
+  )
 }
 
 /**
@@ -66,7 +64,7 @@ function MessagePair({ isFirst = false }: { isFirst?: boolean }) {
  */
 export function ChatSkeleton() {
   // Generate 1-2 conversation pairs randomly
-  const pairs = getRandomInt(1, 2);
+  const pairs = getRandomInt(1, 2)
 
   return (
     <div className="flex h-full flex-col">
@@ -95,23 +93,11 @@ export function ChatSkeleton() {
 
               {/* Action buttons */}
               <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 hover:bg-muted"
-                  disabled
-                >
+                <Button type="button" variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted" disabled>
                   <ImageIcon className="h-5 w-5" />
                 </Button>
 
-                <Button
-                  type="submit"
-                  size="icon"
-                  variant="ghost"
-                  disabled
-                  className="h-8 w-8 hover:bg-muted"
-                >
+                <Button type="submit" size="icon" variant="ghost" disabled className="h-8 w-8 hover:bg-muted">
                   <SendHorizontal className="h-5 w-5" />
                 </Button>
               </div>
@@ -123,5 +109,6 @@ export function ChatSkeleton() {
         </div>
       </div>
     </div>
-  );
+  )
 }
+

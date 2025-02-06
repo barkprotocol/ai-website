@@ -1,5 +1,9 @@
-import type { PrivyClient, SolanaSignTransactionRpcInputType } from "@privy-io/server-auth"
-import type { Connection, PublicKey, Transaction, TransactionSignature, VersionedTransaction } from "@solana/web3.js"
+import type {
+  PrivyClient,
+  SolanaSignTransactionRpcInputType,
+  SolanaSignMessageRpcInputType,
+} from "@privy-io/server-auth"
+import type { Transaction, TransactionSignature, VersionedTransaction } from "@solana/web3.js"
 import type {
   SendTransactionOptions,
   SupportedTransactionVersions,
@@ -11,9 +15,9 @@ import type {
 import { WalletReadyState, WalletError } from "@solana/wallet-adapter-base"
 import EventEmitter from "events"
 
-type ArgumentMap<T> = {
-  [K in keyof T]: T[K] extends (...args: infer A) => any ? A : never
-}
+// type ArgumentMap<T> = {
+//   [K in keyof T]: T[K] extends (...args: infer A) => any ? A : never
+// }
 
 export class PrivyEmbeddedWallet extends EventEmitter implements WalletAdapter {
   private privyClient: PrivyClient
@@ -123,8 +127,20 @@ export class PrivyEmbeddedWallet extends EventEmitter implements WalletAdapter {
   }
 
   async signMessage(message: Uint8Array): Promise<Uint8Array> {
-    // Implement message signing logic
-    throw new Error("Message signing not implemented for Privy Embedded Wallet")
+    try {
+      const request: SolanaSignMessageRpcInputType = {
+        address: this.publicKey.toBase58(),
+        chainType: "solana",
+        method: "signMessage",
+        params: {
+          message: message.toString(),
+        },
+      }
+      const { data } = await this.privyClient.walletApi.rpc(request)
+      return new Uint8Array(Buffer.from(data.signature, "hex"))
+    } catch (error) {
+      throw new Error(`Failed to sign message: ${error instanceof Error ? error.message : "Unknown error"}`)
+    }
   }
 
   listeners<E extends keyof WalletAdapterEvents>(event: E): WalletAdapterEvents[E][] {
@@ -132,19 +148,19 @@ export class PrivyEmbeddedWallet extends EventEmitter implements WalletAdapter {
   }
 
   on<E extends keyof WalletAdapterEvents>(event: E, listener: WalletAdapterEvents[E]): this {
-    return super.on(event, listener as (...args: any[]) => void)
+    return super.on(event, listener as (...args: unknown[]) => void)
   }
 
   once<E extends keyof WalletAdapterEvents>(event: E, listener: WalletAdapterEvents[E]): this {
-    return super.once(event, listener as (...args: any[]) => void)
+    return super.once(event, listener as (...args: unknown[]) => void)
   }
 
   off<E extends keyof WalletAdapterEvents>(event: E, listener: WalletAdapterEvents[E]): this {
-    return super.off(event, listener as (...args: any[]) => void)
+    return super.off(event, listener as (...args: unknown[]) => void)
   }
 
   removeListener<E extends keyof WalletAdapterEvents>(event: E, listener: WalletAdapterEvents[E]): this {
-    return super.removeListener(event, listener as (...args: any[]) => void)
+    return super.removeListener(event, listener as (...args: unknown[]) => void)
   }
 
   emit<E extends keyof WalletAdapterEvents>(event: E, ...args: Parameters<WalletAdapterEvents[E]>): boolean {
@@ -164,12 +180,39 @@ export function cn(...classes: (string | boolean | undefined)[]) {
 // Function to get subscription price as a float
 export function getSubPriceFloat(): number {
   // Replace this with actual logic to fetch the subscription price
-  return 9.98
+  return 9.99
 }
 
 // Function to get trial tokens as a float
 export function getTrialTokensFloat(): number {
   // Replace this with actual logic to fetch the trial tokens amount
   return 100.0
+}
+
+import { Connection, PublicKey } from "@solana/web3.js"
+import { SOLANA_RPC_URL } from "./constants"
+
+export class SolanaUtils {
+  private static connection: Connection
+
+  static getConnection(): Connection {
+    if (!this.connection) {
+      this.connection = new Connection(SOLANA_RPC_URL)
+    }
+    return this.connection
+  }
+
+  static async resolveDomainToAddress(domain: string): Promise<string | null> {
+    try {
+      const connection = this.getConnection()
+      const { pubkey } = await connection.getAddressLookupTable(new PublicKey(domain))
+      return pubkey.toBase58()
+    } catch (error) {
+      console.error("Error resolving domain:", error)
+      return null
+    }
+  }
+
+  // Add more Solana utility functions here as needed
 }
 

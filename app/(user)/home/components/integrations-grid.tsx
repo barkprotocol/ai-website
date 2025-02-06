@@ -1,5 +1,5 @@
-import { INTEGRATIONS } from '../data/integrations';
-import { IntegrationCard } from './integration-card';
+import { INTEGRATIONS } from "../data/integrations"
+import { IntegrationCard } from "./integration-card"
 
 export function IntegrationsGrid() {
   return (
@@ -11,10 +11,11 @@ export function IntegrationsGrid() {
           index={index}
           onClick={() => {
             // TODO: Implement integration click handler
-            console.log(`Clicked ${item.label}`);
+            console.log(`Clicked ${item.label}`)
           }}
         />
       ))}
     </div>
-  );
+  )
 }
+

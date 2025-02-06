@@ -1,58 +1,48 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { type Dispatch, type SetStateAction, useCallback, useEffect, useRef, useState } from "react"
 
-import Image from 'next/image';
+import Image from "next/image"
 
-import { SavedPrompt } from '@prisma/client';
-import { Attachment } from 'ai';
-import { Image as ImageIcon, SendHorizontal, X } from 'lucide-react';
-import { toast } from 'sonner';
+import type { SavedPrompt } from "@prisma/client"
+import type { Attachment } from "ai"
+import { ImageIcon, SendHorizontal, X } from "lucide-react"
+import { toast } from "sonner"
 
-import { SavedPromptsMenu } from '@/components/saved-prompts-menu';
-import { BorderBeam } from '@/components/ui/border-beam';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { uploadImage } from '@/lib/upload';
-import { cn } from '@/lib/utils';
-import {
-  getSavedPrompts,
-  setSavedPromptLastUsedAt,
-} from '@/server/actions/saved-prompt';
+import { SavedPromptsMenu } from "@/components/saved-prompts-menu"
+import { BorderBeam } from "@/components/ui/border-beam"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { uploadImage } from "@/lib/upload"
+import { cn } from "@/lib/utils"
+import { getSavedPrompts, setSavedPromptLastUsedAt } from "@/server/actions/saved-prompt"
 
 interface ConversationInputProps {
-  value: string;
-  onChange: (value: string) => void;
-  onSubmit: (value: string, attachments: Attachment[]) => Promise<void>;
-  onChat?: boolean;
-  savedPrompts: SavedPrompt[];
-  setSavedPrompts: Dispatch<SetStateAction<SavedPrompt[]>>;
+  value: string
+  onChange: (value: string) => void
+  onSubmit: (value: string, attachments: Attachment[]) => Promise<void>
+  onChat?: boolean
+  savedPrompts: SavedPrompt[]
+  setSavedPrompts: Dispatch<SetStateAction<SavedPrompt[]>>
 }
 
-export const MAX_CHARS = 2000;
+export const MAX_CHARS = 2000
 
 interface UploadingImage extends Attachment {
-  localUrl: string;
-  uploading: boolean;
+  localUrl: string
+  uploading: boolean
 }
 
 function AttachmentPreview({
   attachment,
   onRemove,
 }: {
-  attachment: UploadingImage;
-  onRemove: () => void;
+  attachment: UploadingImage
+  onRemove: () => void
 }) {
   return (
     <div className="group relative h-16 w-16 shrink-0">
       <Image
-        src={attachment.localUrl}
-        alt={attachment.name ?? 'Attached image'}
+        src={attachment.localUrl || "/placeholder.svg"}
+        alt={attachment.name ?? "Attached image"}
         fill
         className="rounded-lg border object-cover"
       />
@@ -69,7 +59,7 @@ function AttachmentPreview({
         <X className="h-3 w-3" />
       </button>
     </div>
-  );
+  )
 }
 
 export function ConversationInput({
@@ -80,182 +70,168 @@ export function ConversationInput({
   savedPrompts = [],
   setSavedPrompts = () => {},
 }: ConversationInputProps) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [attachments, setAttachments] = useState<UploadingImage[]>([]);
-  const [isFetchingSavedPrompts, setIsFetchingSavedPrompts] = useState(true);
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [attachments, setAttachments] = useState<UploadingImage[]>([])
+  const [isFetchingSavedPrompts, setIsFetchingSavedPrompts] = useState(true)
 
   useEffect(() => {
     async function fetchSavedPrompts() {
       try {
-        const res = await getSavedPrompts();
-        const prompts = res?.data?.data || [];
+        const res = await getSavedPrompts()
+        const prompts = res?.data?.data || []
 
-        setSavedPrompts(prompts);
+        setSavedPrompts(prompts)
       } catch (err) {
-        console.error(err);
+        console.error(err)
       }
 
-      setIsFetchingSavedPrompts(false);
+      setIsFetchingSavedPrompts(false)
     }
 
-    fetchSavedPrompts();
-  }, []);
+    fetchSavedPrompts()
+  }, [])
 
   const handleImageUpload = useCallback(async (file: File) => {
-    const localUrl = URL.createObjectURL(file);
+    const localUrl = URL.createObjectURL(file)
     const newAttachment: UploadingImage = {
       url: localUrl,
       name: file.name,
       contentType: file.type,
       localUrl,
       uploading: true,
-    };
+    }
 
-    setAttachments((prev) => [...prev, newAttachment]);
+    setAttachments((prev) => [...prev, newAttachment])
 
     try {
-      const url = await uploadImage(file);
-      if (!url) throw new Error('Failed to upload image');
+      const url = await uploadImage(file)
+      if (!url) throw new Error("Failed to upload image")
 
-      setAttachments((prev) =>
-        prev.map((att) =>
-          att.localUrl === localUrl ? { ...att, url, uploading: false } : att,
-        ),
-      );
+      setAttachments((prev) => prev.map((att) => (att.localUrl === localUrl ? { ...att, url, uploading: false } : att)))
     } catch (error) {
-      console.error('Failed to upload image:', error);
-      toast.error('Failed to upload image');
-      setAttachments((prev) => prev.filter((att) => att.localUrl !== localUrl));
+      console.error("Failed to upload image:", error)
+      toast.error("Failed to upload image")
+      setAttachments((prev) => prev.filter((att) => att.localUrl !== localUrl))
     } finally {
-      URL.revokeObjectURL(localUrl);
+      URL.revokeObjectURL(localUrl)
     }
-  }, []);
+  }, [])
 
   const removeAttachment = useCallback((localUrl: string) => {
     setAttachments((prev) => {
-      const attachment = prev.find((att) => att.localUrl === localUrl);
+      const attachment = prev.find((att) => att.localUrl === localUrl)
       if (attachment) {
-        URL.revokeObjectURL(attachment.localUrl);
+        URL.revokeObjectURL(attachment.localUrl)
       }
-      return prev.filter((att) => att.localUrl !== localUrl);
-    });
-  }, []);
+      return prev.filter((att) => att.localUrl !== localUrl)
+    })
+  }, [])
 
   const handleFileSelect = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const files = Array.from(e.target.files || []);
-      if (files.length === 0) return;
+      const files = Array.from(e.target.files || [])
+      if (files.length === 0) return
 
-      await Promise.all(files.map(handleImageUpload));
+      await Promise.all(files.map(handleImageUpload))
 
       if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        fileInputRef.current.value = ""
       }
     },
     [handleImageUpload],
-  );
+  )
 
   const handlePaste = useCallback(
     async (e: React.ClipboardEvent) => {
-      const items = Array.from(e.clipboardData.items);
+      const items = Array.from(e.clipboardData.items)
       const imageFiles = items
-        .filter((item) => item.type.startsWith('image/'))
+        .filter((item) => item.type.startsWith("image/"))
         .map((item) => item.getAsFile())
-        .filter((file): file is File => file !== null);
+        .filter((file): file is File => file !== null)
 
-      await Promise.all(imageFiles.map(handleImageUpload));
+      await Promise.all(imageFiles.map(handleImageUpload))
     },
     [handleImageUpload],
-  );
+  )
 
   const handleSubmit = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if (!value.trim() && attachments.length === 0) return;
+    e?.preventDefault()
+    if (!value.trim() && attachments.length === 0) return
     if (attachments.some((att) => att.uploading)) {
-      toast.error('Please wait for images to finish uploading');
-      return;
+      toast.error("Please wait for images to finish uploading")
+      return
     }
 
-    const currentAttachments = attachments.map(
-      ({ url, name, contentType }) => ({
-        url,
-        name,
-        contentType,
-      }),
-    );
+    const currentAttachments = attachments.map(({ url, name, contentType }) => ({
+      url,
+      name,
+      contentType,
+    }))
 
-    setAttachments([]);
-    await onSubmit(value, currentAttachments);
-  };
+    setAttachments([])
+    await onSubmit(value, currentAttachments)
+  }
 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
+    const newValue = e.target.value
     if (newValue.length <= MAX_CHARS) {
-      onChange(newValue);
-      return;
+      onChange(newValue)
+      return
     }
-    toast.error('Maximum character limit reached');
-  };
+    toast.error("Maximum character limit reached")
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
-      e.preventDefault();
-      handleSubmit();
+    if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+      e.preventDefault()
+      handleSubmit()
     }
-  };
+  }
 
   useEffect(() => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
+    const textarea = textareaRef.current
+    if (!textarea) return
 
-    textarea.style.height = 'auto';
-    textarea.style.height = `${textarea.scrollHeight}px`;
-  }, [value]);
+    textarea.style.height = "auto"
+    textarea.style.height = `${textarea.scrollHeight}px`
+  }, [value])
 
   useEffect(() => {
     return () => {
       attachments.forEach((att) => {
         if (att.uploading) {
-          URL.revokeObjectURL(att.localUrl);
+          URL.revokeObjectURL(att.localUrl)
         }
-      });
-    };
-  }, [attachments]);
+      })
+    }
+  }, [attachments])
 
   async function updatePromptLastUsedAt(id: string) {
     try {
-      const res = await setSavedPromptLastUsedAt({ id });
+      const res = await setSavedPromptLastUsedAt({ id })
       if (!res?.data?.data) {
-        throw new Error();
+        throw new Error()
       }
 
-      const { lastUsedAt } = res.data.data;
+      const { lastUsedAt } = res.data.data
 
-      setSavedPrompts((old) =>
-        old.map((prompt) =>
-          prompt.id !== id ? prompt : { ...prompt, lastUsedAt },
-        ),
-      );
+      setSavedPrompts((old) => old.map((prompt) => (prompt.id !== id ? prompt : { ...prompt, lastUsedAt })))
     } catch (error) {
-      console.error('Failed to update -lastUsedAt- for prompt:', { error });
+      console.error("Failed to update -lastUsedAt- for prompt:", { error })
     }
   }
 
-  const filteredPrompts = value.startsWith('/')
-    ? savedPrompts.filter((savedPrompt) =>
-        savedPrompt.title.toLowerCase().includes(value.slice(1).toLowerCase()),
-      )
-    : savedPrompts;
+  const filteredPrompts = value.startsWith("/")
+    ? savedPrompts.filter((savedPrompt) => savedPrompt.title.toLowerCase().includes(value.slice(1).toLowerCase()))
+    : savedPrompts
 
   function handlePromptMenuClick(subtitle: string) {
-    onChange(subtitle);
+    onChange(subtitle)
   }
 
   return (
-    <div
-      className={`relative ${!onChat ? 'duration-500 animate-in fade-in slide-in-from-bottom-4' : ''}`}
-    >
+    <div className={`relative ${!onChat ? "duration-500 animate-in fade-in slide-in-from-bottom-4" : ""}`}>
       <div className="relative rounded-xl bg-muted">
         <form onSubmit={handleSubmit} className="flex flex-col">
           {onChat && (
@@ -287,19 +263,17 @@ export function ConversationInput({
             onKeyDown={handleKeyDown}
             onPaste={handlePaste}
             maxLength={MAX_CHARS}
-            placeholder={
-              onChat ? 'Send a message...' : 'Start a new conversation...'
-            }
+            placeholder={onChat ? "Send a message..." : "Start a new conversation..."}
             className={cn(
-              'min-h-[110px] w-full resize-none overflow-hidden border-0 bg-transparent px-4 py-3 text-base focus-visible:ring-0',
-              attachments.length > 0 ? 'rounded-t-none' : 'rounded-t-xl',
+              "min-h-[110px] w-full resize-none overflow-hidden border-0 bg-transparent px-4 py-3 text-base focus-visible:ring-0",
+              attachments.length > 0 ? "rounded-t-none" : "rounded-t-xl",
             )}
           />
 
           <div className="flex items-center justify-between border-t px-4 py-2">
             <div className="flex w-full flex-row items-center justify-between">
               <span className="text-xs text-muted-foreground">
-                Type / to search for saved prompts (e.g. Solana Price...)
+                Type / to search for saved prompts (e.g. /Solana Price...)
               </span>
               <span className="text-xs text-muted-foreground">
                 {value.length}/{MAX_CHARS}
@@ -330,10 +304,7 @@ export function ConversationInput({
                 type="submit"
                 size="icon"
                 variant="ghost"
-                disabled={
-                  (!value.trim() && attachments.length === 0) ||
-                  attachments.some((att) => att.uploading)
-                }
+                disabled={(!value.trim() && attachments.length === 0) || attachments.some((att) => att.uploading)}
                 className="group relative flex h-8 w-8 items-center justify-center rounded-lg 
                   transition-all duration-200 ease-in-out
                   hover:bg-primary hover:text-primary-foreground 
@@ -348,5 +319,6 @@ export function ConversationInput({
         {!onChat && <BorderBeam size={250} duration={8} delay={9} />}
       </div>
     </div>
-  );
+  )
 }
+

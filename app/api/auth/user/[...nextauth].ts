@@ -4,14 +4,12 @@ import type { Session } from "next-auth"
 import type { JWT } from "next-auth/jwt"
 import { compare } from "bcryptjs"
 import type { User } from "@prisma/client"
+import type { DefaultUser } from "next-auth"
 
 // Extend the built-in User type to include id
 declare module "next-auth" {
-  interface User {
+  interface User extends DefaultUser {
     id: string
-    name?: string | null
-    email?: string | null
-    image?: string | null
   }
 }
 

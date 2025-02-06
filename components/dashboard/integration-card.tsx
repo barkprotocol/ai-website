@@ -1,52 +1,56 @@
-'use client';
+"use client"
 
-import React, { forwardRef, useRef } from 'react';
+import type React from "react"
+import { forwardRef, useRef } from "react"
 
-import Image from 'next/image';
+import Image from "next/image"
 
-import { AnimatedBeam } from '@/components/ui/animated-beam';
-import { cn } from '@/lib/utils';
+import { AnimatedBeam } from "@/components/ui/animated-beam"
+import { cn } from "@/lib/utils"
 
-import Logo from '../logo';
+import { Logo } from "@/components/ui/logo"
 
 const Icons = [
-  'integrations/dexscreener.svg',
-  'integrations/dialect.svg',
-  'integrations/jupiter.svg',
-  'integrations/magic_eden.svg',
-  'integrations/pump_fun.svg',
+  "integrations/dexscreener.svg",
+  "integrations/dialect.svg",
+  "integrations/jupiter.svg",
+  "integrations/magic_eden.svg",
+  "integrations/pump_fun.svg",
+  "integrations/metaplex.svg",
+  "integrations/meteora.svg",
+  "integrations/openbook.svg",
+  "integrations/bark.svg",
 ].map((icon) => {
-  return <Image key={icon} src={icon} alt={icon} width={32} height={32} />;
-});
+  return <Image key={icon} src={icon || "/placeholder.svg"} alt={icon} width={32} height={32} />
+})
 
-const Circle = forwardRef<
-  HTMLDivElement,
-  { className?: string; children?: React.ReactNode }
->(({ className, children }, ref) => {
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        'z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white p-3 shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)]',
-        className,
-      )}
-    >
-      {children}
-    </div>
-  );
-});
+const Circle = forwardRef<HTMLDivElement, { className?: string; children?: React.ReactNode }>(
+  ({ className, children }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white p-3 shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)]",
+          className,
+        )}
+      >
+        {children}
+      </div>
+    )
+  },
+)
 
-Circle.displayName = 'Circle';
+Circle.displayName = "Circle"
 
 export function IntegrationCard() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const div1Ref = useRef<HTMLDivElement>(null);
-  const div2Ref = useRef<HTMLDivElement>(null);
-  const div3Ref = useRef<HTMLDivElement>(null);
-  const div4Ref = useRef<HTMLDivElement>(null);
-  const div5Ref = useRef<HTMLDivElement>(null);
-  const div6Ref = useRef<HTMLDivElement>(null);
-  const div7Ref = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null)
+  const div1Ref = useRef<HTMLDivElement>(null)
+  const div2Ref = useRef<HTMLDivElement>(null)
+  const div3Ref = useRef<HTMLDivElement>(null)
+  const div4Ref = useRef<HTMLDivElement>(null)
+  const div5Ref = useRef<HTMLDivElement>(null)
+  const div6Ref = useRef<HTMLDivElement>(null)
+  const div7Ref = useRef<HTMLDivElement>(null)
 
   return (
     <div
@@ -71,25 +75,9 @@ export function IntegrationCard() {
         </div>
       </div>
 
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div1Ref}
-        toRef={div4Ref}
-        curvature={-75}
-        endYOffset={-10}
-      />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div2Ref}
-        toRef={div4Ref}
-      />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div3Ref}
-        toRef={div4Ref}
-        curvature={75}
-        endYOffset={10}
-      />
+      <AnimatedBeam containerRef={containerRef} fromRef={div1Ref} toRef={div4Ref} curvature={-75} endYOffset={-10} />
+      <AnimatedBeam containerRef={containerRef} fromRef={div2Ref} toRef={div4Ref} />
+      <AnimatedBeam containerRef={containerRef} fromRef={div3Ref} toRef={div4Ref} curvature={75} endYOffset={10} />
       <AnimatedBeam
         containerRef={containerRef}
         fromRef={div5Ref}
@@ -98,12 +86,7 @@ export function IntegrationCard() {
         endYOffset={-10}
         reverse
       />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div6Ref}
-        toRef={div4Ref}
-        reverse
-      />
+      <AnimatedBeam containerRef={containerRef} fromRef={div6Ref} toRef={div4Ref} reverse />
       <AnimatedBeam
         containerRef={containerRef}
         fromRef={div7Ref}
@@ -113,5 +96,6 @@ export function IntegrationCard() {
         reverse
       />
     </div>
-  );
+  )
 }
+

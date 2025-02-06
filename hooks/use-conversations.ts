@@ -1,14 +1,16 @@
-import { useCallback, useEffect } from 'react';
+"use client"
 
-import { Conversation } from '@prisma/client';
+import { useCallback, useEffect } from "react"
 
-import { useConversationsStore } from '@/hooks/store/conversations';
-import { renameConversation } from '@/server/actions/ai';
+import type { Conversation } from "@prisma/client"
+
+import { useConversationsStore } from "@/hooks/store/conversations"
+import { renameConversation } from "@/server/actions/ai"
 
 async function fetchConversations(userId: string): Promise<Conversation[]> {
-  const response = await fetch(`/api/conversations?userId=${userId}`);
-  if (!response.ok) throw new Error('Failed to fetch conversations');
-  return response.json();
+  const response = await fetch(`/api/conversations?userId=${userId}`)
+  if (!response.ok) throw new Error("Failed to fetch conversations")
+  return response.json()
 }
 
 export function useConversations(userId?: string) {
@@ -21,82 +23,82 @@ export function useConversations(userId?: string) {
     setActiveId,
     setLoading,
     markAsRead,
-  } = useConversationsStore();
+  } = useConversationsStore()
 
   const refreshConversations = useCallback(async () => {
-    if (!userId) return;
+    if (!userId) return
     try {
-      const data = await fetchConversations(userId);
-      setConversations(data);
+      const data = await fetchConversations(userId)
+      setConversations(data)
     } catch (error) {
-      console.error('Failed to refresh conversations:', error);
+      console.error("Failed to refresh conversations:", error)
     }
-  }, [userId, setConversations]);
+  }, [userId, setConversations])
 
   // Initial fetch
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) return
 
-    let mounted = true;
-    setLoading(true);
+    let mounted = true
+    setLoading(true)
 
     fetchConversations(userId)
       .then((data) => {
         if (mounted) {
-          setConversations(data);
+          setConversations(data)
         }
       })
       .catch((error) => {
-        console.error('Failed to load conversations:', error);
+        console.error("Failed to load conversations:", error)
       })
       .finally(() => {
         if (mounted) {
-          setLoading(false);
+          setLoading(false)
         }
-      });
+      })
 
     return () => {
-      mounted = false;
-    };
-  }, [userId, setConversations, setLoading]);
+      mounted = false
+    }
+  }, [userId, setConversations, setLoading])
 
   const deleteConversation = useCallback(
     async (id: string): Promise<void> => {
       try {
         // Perform actual deletion first
-        const response = await fetch('/api/chat', {
-          method: 'DELETE',
+        const response = await fetch("/api/chat", {
+          method: "DELETE",
           body: JSON.stringify({ id }),
-        });
+        })
 
         if (!response.ok) {
-          throw new Error('Failed to delete conversation');
+          throw new Error("Failed to delete conversation")
         }
 
         // Only remove from store after successful deletion
-        removeConversation(id);
+        removeConversation(id)
 
         // Force refresh to ensure consistency
-        await refreshConversations();
+        await refreshConversations()
       } catch (error) {
-        console.error('Error deleting conversation:', error);
+        console.error("Error deleting conversation:", error)
         // Reload conversations on error
-        await refreshConversations();
-        throw error; // Re-throw to handle in the component
+        await refreshConversations()
+        throw error // Re-throw to handle in the component
       }
     },
     [removeConversation, refreshConversations],
-  );
+  )
 
   const handleRename = async (id: string, newTitle: string) => {
     try {
-      const renameResponse = await renameConversation({ id, title: newTitle });
-      await refreshConversations();
+      const renameResponse = await renameConversation({ id, title: newTitle })
+      await refreshConversations()
     } catch (error) {
-      console.error('Error renaming conversation:', error);
-      throw error;
+      console.error("Error renaming conversation:", error)
+      throw error
     }
-  };
+  }
 
   return {
     conversations,
@@ -107,5 +109,6 @@ export function useConversations(userId?: string) {
     refreshConversations,
     renameConversation: handleRename,
     markAsRead,
-  };
+  }
 }
+

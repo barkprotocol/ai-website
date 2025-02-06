@@ -1,7 +1,7 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export function LoadingStateSkeleton() {
   return (
@@ -9,9 +9,7 @@ export function LoadingStateSkeleton() {
       <div className="w-full px-8">
         <div className="max-w-3xl space-y-6">
           <section className="space-y-4">
-            <h2 className="text-sm font-medium text-muted-foreground">
-              Profile Information
-            </h2>
+            <h2 className="text-sm font-medium text-muted-foreground">Profile Information</h2>
 
             <Card className="bg-sidebar">
               <CardContent className="pt-6">
@@ -28,25 +26,19 @@ export function LoadingStateSkeleton() {
 
                   <div className="space-y-4">
                     <div>
-                      <Label className="text-xs text-muted-foreground">
-                        Account ID
-                      </Label>
+                      <Label className="text-xs text-muted-foreground">Account ID</Label>
                       <div className="mt-1">
                         <Skeleton className="h-6 w-full" />
                       </div>
                     </div>
                     <div>
-                      <Label className="text-xs text-muted-foreground">
-                        Early Access Program
-                      </Label>
+                      <Label className="text-xs text-muted-foreground">Early Access Program</Label>
                       <div className="mt-1">
                         <Skeleton className="h-6 w-full" />
                       </div>
                     </div>
                     <div>
-                      <Label className="text-xs text-muted-foreground">
-                        Degen Mode
-                      </Label>
+                      <Label className="text-xs text-muted-foreground">Degen Mode</Label>
                       <div className="mt-1 flex flex-col items-center">
                         <Skeleton className="h-8 w-full" />
                       </div>
@@ -59,9 +51,7 @@ export function LoadingStateSkeleton() {
 
           {/* Connected Accounts Section */}
           <section className="space-y-4">
-            <h2 className="text-sm font-medium text-muted-foreground">
-              Connected Accounts
-            </h2>
+            <h2 className="text-sm font-medium text-muted-foreground">Connected Accounts</h2>
 
             <Card className="bg-sidebar">
               <CardContent className="pt-6">
@@ -96,9 +86,7 @@ export function LoadingStateSkeleton() {
 
           {/* Subscription Section */}
           <section className="space-y-4">
-            <h2 className="text-sm font-medium text-muted-foreground">
-              Subscription Management
-            </h2>
+            <h2 className="text-sm font-medium text-muted-foreground">Subscription Management</h2>
             <Card className="bg-sidebar">
               <CardContent className="pt-6">
                 <div className="space-y-4">
@@ -114,24 +102,18 @@ export function LoadingStateSkeleton() {
 
           {/* Embedded Wallet Section */}
           <section className="space-y-4">
-            <h2 className="text-sm font-medium text-muted-foreground">
-              Embedded Wallet
-            </h2>
+            <h2 className="text-sm font-medium text-muted-foreground">Embedded Wallet</h2>
             <Card className="bg-sidebar">
               <CardContent className="pt-6">
                 <div className="space-y-4">
                   <div>
-                    <Label className="text-xs text-muted-foreground">
-                      Public Key
-                    </Label>
+                    <Label className="text-xs text-muted-foreground">Public Key</Label>
                     <div className="mt-1">
                       <Skeleton className="h-6 w-full" />
                     </div>
                   </div>
                   <div>
-                    <Label className="text-xs text-muted-foreground">
-                      Balance
-                    </Label>
+                    <Label className="text-xs text-muted-foreground">Balance</Label>
                     <div className="mt-1">
                       <Skeleton className="h-8 w-32" />
                     </div>
@@ -147,5 +129,6 @@ export function LoadingStateSkeleton() {
         </div>
       </div>
     </div>
-  );
+  )
 }
+

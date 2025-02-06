@@ -1,16 +1,13 @@
-import { Suspense } from 'react';
+import { Suspense } from "react"
 
-import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 
-import { verifyUser } from '@/server/actions/user';
-import {
-  dbGetConversation,
-  dbGetConversationMessages,
-} from '@/server/db/queries';
+import { verifyUser } from "@/server/actions/user"
+import { dbGetConversation, dbGetConversationMessages } from "@/server/db/queries"
 
-import ChatInterface from './chat-interface';
-import { ChatSkeleton } from './chat-skeleton';
+import ChatInterface from "./chat-interface"
+import { ChatSkeleton } from "./chat-skeleton"
 
 /**
  * Generates metadata for the chat page based on conversation details
@@ -18,22 +15,22 @@ import { ChatSkeleton } from './chat-skeleton';
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>
 }): Promise<Metadata> {
-  const { id } = await params;
-  const conversation = await dbGetConversation({ conversationId: id });
+  const { id } = await params
+  const conversation = await dbGetConversation({ conversationId: id })
 
   if (!conversation) {
     return {
-      title: 'Chat Not Found',
-      description: 'The requested chat conversation could not be found.',
-    };
+      title: "Chat Not Found",
+      description: "The requested chat conversation could not be found.",
+    }
   }
 
   return {
-    title: `Chat - ${conversation.title || 'Untitled Conversation'}`,
-    description: `Chat conversation: ${conversation.title || 'Untitled Conversation'}`,
-  };
+    title: `Chat - ${conversation.title || "Untitled Conversation"}`,
+    description: `Chat conversation: ${conversation.title || "Untitled Conversation"}`,
+  }
 }
 
 /**
@@ -41,35 +38,32 @@ export async function generateMetadata({
  * Handles authentication, data loading, and access control
  */
 async function ChatData({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const conversation = await dbGetConversation({ conversationId: id });
+  const { id } = await params
+  const conversation = await dbGetConversation({ conversationId: id })
 
   if (!conversation) {
-    return notFound();
+    return notFound()
   }
 
   // Verify user authentication and access rights
-  const authResponse = await verifyUser();
-  const userId = authResponse?.data?.data?.id;
+  const authResponse = await verifyUser()
+  const userId = authResponse?.data?.data?.id
 
   // Check if user has access to private conversation
-  if (
-    conversation.visibility === 'PRIVATE' &&
-    (!userId || conversation.userId !== userId)
-  ) {
-    return notFound();
+  if (conversation.visibility === "PRIVATE" && (!userId || conversation.userId !== userId)) {
+    return notFound()
   }
 
   // Load conversation messages
   const messagesFromDB = await dbGetConversationMessages({
     conversationId: id,
-  });
+  })
 
   if (!messagesFromDB) {
-    return notFound();
+    return notFound()
   }
 
-  return <ChatInterface id={id} initialMessages={messagesFromDB} />;
+  return <ChatInterface id={id} initialMessages={messagesFromDB} />
 }
 
 /**
@@ -78,11 +72,12 @@ async function ChatData({ params }: { params: Promise<{ id: string }> }) {
 export default function ChatPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>
 }) {
   return (
     <Suspense fallback={<ChatSkeleton />}>
       <ChatData params={params} />
     </Suspense>
-  );
+  )
 }
+

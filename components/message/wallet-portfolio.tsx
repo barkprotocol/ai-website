@@ -1,28 +1,28 @@
-'use client';
+"use client"
 
-import { ExternalLink, TrendingUp, Wallet } from 'lucide-react';
+import { ExternalLink, TrendingUp, Wallet } from "lucide-react"
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { formatNumber } from '@/lib/format';
-import { cn } from '@/lib/utils';
-import { WalletPortfolio as Portfolio } from '@/types/helius/portfolio';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { formatNumber } from "@/lib/format"
+import { cn } from "@/lib/utils"
+import type { WalletPortfolio as Portfolio } from "@/types/helius/portfolio"
 
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { ScrollArea } from '../ui/scroll-area';
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import { ScrollArea } from "../ui/scroll-area"
 
 interface WalletPortfolioProps {
-  data: Portfolio;
-  className?: string;
-  isLoading?: boolean;
+  data: Portfolio
+  className?: string
+  isLoading?: boolean
 }
 
 function getInitials(name: string) {
   return name
-    .split(' ')
+    .split(" ")
     .map((word) => word[0])
-    .join('')
+    .join("")
     .toUpperCase()
-    .slice(0, 2);
+    .slice(0, 2)
 }
 
 function TokenCardSkeleton() {
@@ -40,17 +40,17 @@ function TokenCardSkeleton() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 function TokenRow({
   token,
   index,
 }: {
-  token: Portfolio['tokens'][0];
-  index: number;
+  token: Portfolio["tokens"][0]
+  index: number
 }) {
-  const hasPrice = token.pricePerToken > 0;
+  const hasPrice = token.pricePerToken > 0
 
   return (
     <a
@@ -69,9 +69,7 @@ function TokenRow({
                 alt={token.name}
                 className="object-cover transition-transform duration-300 group-hover/row:scale-105"
               />
-              <AvatarFallback className="rounded-xl text-sm">
-                {getInitials(token.name)}
-              </AvatarFallback>
+              <AvatarFallback className="rounded-xl text-sm">{getInitials(token.name)}</AvatarFallback>
             </Avatar>
             <div className="absolute -right-1 -top-1 h-4 w-4 rounded-full border-2 border-background bg-primary opacity-0 transition-opacity duration-200 group-hover/row:opacity-100" />
           </div>
@@ -86,7 +84,7 @@ function TokenRow({
               <span className="font-medium text-muted-foreground">
                 {token.balance.toLocaleString(undefined, {
                   maximumFractionDigits: 4,
-                })}{' '}
+                })}{" "}
                 {token.symbol}
               </span>
             </div>
@@ -95,9 +93,7 @@ function TokenRow({
 
         {/* Price Info */}
         <div className="flex flex-col items-end gap-1.5">
-          <div className="font-medium">
-            {formatNumber(token.balance * token.pricePerToken, 'currency')}
-          </div>
+          <div className="font-medium">{formatNumber(token.balance * token.pricePerToken, "currency")}</div>
           {hasPrice && (
             <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground sm:text-xs">
               <span>@ {token.pricePerToken.toFixed(4)} $</span>
@@ -107,21 +103,14 @@ function TokenRow({
         </div>
       </div>
     </a>
-  );
+  )
 }
 
-export function WalletPortfolio({
-  data,
-  className,
-  isLoading = false,
-}: WalletPortfolioProps) {
+export function WalletPortfolio({ data, className, isLoading = false }: WalletPortfolioProps) {
   if (isLoading) {
     return (
       <Card
-        className={cn(
-          'mt-3 overflow-hidden border-border/50 bg-gradient-to-br from-background to-muted/30',
-          className,
-        )}
+        className={cn("mt-3 overflow-hidden border-border/50 bg-gradient-to-br from-background to-muted/30", className)}
       >
         <CardHeader className="p-4 sm:p-6">
           <CardTitle className="flex items-center justify-between">
@@ -139,15 +128,12 @@ export function WalletPortfolio({
           </ScrollArea>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
     <Card
-      className={cn(
-        'mt-3 overflow-hidden border-border/50 bg-gradient-to-br from-background to-muted/30',
-        className,
-      )}
+      className={cn("mt-3 overflow-hidden border-border/50 bg-gradient-to-br from-background to-muted/30", className)}
     >
       <CardHeader className="border-b border-border/40 bg-muted/20 p-4 sm:p-6">
         <CardTitle className="flex items-center justify-between">
@@ -161,9 +147,7 @@ export function WalletPortfolio({
               <span>{data.tokens.length} tokens</span>
             </div>
           </div>
-          <span className="text-base font-medium sm:text-lg">
-            {formatNumber(data.totalBalance, 'currency')}
-          </span>
+          <span className="text-base font-medium sm:text-lg">{formatNumber(data.totalBalance, "currency")}</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
@@ -176,5 +160,6 @@ export function WalletPortfolio({
         </ScrollArea>
       </CardContent>
     </Card>
-  );
+  )
 }
+

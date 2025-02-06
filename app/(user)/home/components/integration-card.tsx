@@ -1,25 +1,20 @@
-import Image from 'next/image';
-
-import { motion } from 'framer-motion';
-
-import type { Integration } from '../data/integrations';
+import Image from "next/image"
+import { motion } from "framer-motion"
+import type React from "react"
+import type { Integration } from "../data/integrations"
 
 interface IntegrationCardProps {
-  item: Integration;
-  index: number;
-  onClick?: () => void;
+  item: Integration
+  index: number
+  onClick?: () => void
 }
 
 interface IntegrationCardStyles extends React.CSSProperties {
-  '--integration-primary': string;
-  '--integration-secondary': string;
+  "--integration-primary": string
+  "--integration-secondary": string
 }
 
-export function IntegrationCard({
-  item,
-  index,
-  onClick,
-}: IntegrationCardProps) {
+export function IntegrationCard({ item, index, onClick }: IntegrationCardProps) {
   return (
     <motion.button
       initial={{ opacity: 0 }}
@@ -38,8 +33,8 @@ export function IntegrationCard({
         p-4 transition-all duration-200"
       style={
         {
-          '--integration-primary': item.theme.primary,
-          '--integration-secondary': item.theme.secondary,
+          "--integration-primary": item.theme.primary,
+          "--integration-secondary": item.theme.secondary,
         } as IntegrationCardStyles
       }
     >
@@ -47,7 +42,7 @@ export function IntegrationCard({
         initial={false}
         whileHover={{
           scale: 1.05,
-          transition: { type: 'spring', stiffness: 300, damping: 20 },
+          transition: { type: "spring", stiffness: 300, damping: 20 },
         }}
         className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg"
         style={{
@@ -55,7 +50,7 @@ export function IntegrationCard({
         }}
       >
         <Image
-          src={item.icon}
+          src={item.icon || "/placeholder.svg"}
           alt={item.label}
           width={24}
           height={24}
@@ -64,17 +59,11 @@ export function IntegrationCard({
       </motion.div>
 
       <div className="z-10 flex-1 space-y-0.5 text-left">
-        <motion.div
-          className="text-sm font-medium transition-colors duration-300"
-          initial={false}
-        >
+        <motion.div className="text-sm font-medium transition-colors duration-300" initial={false}>
           {item.label}
         </motion.div>
         {item.description && (
-          <motion.div
-            className="line-clamp-1 text-xs text-muted-foreground/70"
-            initial={false}
-          >
+          <motion.div className="line-clamp-1 text-xs text-muted-foreground/70" initial={false}>
             {item.description}
           </motion.div>
         )}
@@ -88,5 +77,6 @@ export function IntegrationCard({
         }}
       />
     </motion.button>
-  );
+  )
 }
+
