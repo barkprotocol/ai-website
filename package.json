@@ -83,7 +83,7 @@
     "ai": "^4.1.21",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.9",
-    "base-x": "^5.0.0",
+    "base-x": "^5.0.1",
     "bcryptjs": "^2.4.3",
     "bs58": "^6.0.0",
     "class-variance-authority": "^0.7.1",
